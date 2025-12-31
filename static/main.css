@@ -1,0 +1,24 @@
+body{
+	margin:0;
+	padding:0;
+    background-color: black;
+}
+canvas {
+    max-width:980px;
+}
+div.item_1 {
+  margin: 10px auto;
+  align-self: center;
+  max-width: 450px;
+}
+canvas:focus{
+    outline: none;
+}
+div.flexbox-container {
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+  margin-left: auto;
+  margin-right: auto;
+}
