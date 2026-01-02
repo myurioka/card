@@ -51,11 +51,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Build Rust WebAssembly files
-      - name: Build WebAssembly
-        run: pnpm build-wasm
-
-      # Build the full project with Vite
+      # Build Rust WebAssembly and Vite project
       - name: Build project
         run: pnpm build
 

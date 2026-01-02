@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "vite",
-        "build": "wasm-pack build ./src/wasm --target web && vite build",
+        "build": "wasm-pack build ./src/wasm --target web --out-dir ../../js/ && vite build",
         "build-wasm": "wasm-pack build ./src/wasm --target web --out-dir ../../js/",
         "preview": "vite preview"
     },
