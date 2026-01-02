@@ -5,11 +5,18 @@ body{
 }
 canvas {
     max-width:980px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    box-shadow:
+        0 0 20px rgba(100, 150, 255, 0.5),
+        0 0 40px rgba(100, 150, 255, 0.3),
+        0 8px 32px rgba(0, 0, 0, 0.6);
+    background: linear-gradient(135deg, rgba(30, 30, 40, 0.8), rgba(20, 20, 30, 0.8));
 }
 div.item_1 {
   margin: 10px auto;
   align-self: center;
-  max-width: 450px;
+  max-width: 700px;
 }
 canvas:focus{
     outline: none;
