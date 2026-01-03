@@ -127,6 +127,30 @@ impl Renderer {
         self.context.set_font(&font.get());
         let _ = self.context.fill_text(text, point.x as f64, point.y as f64);
     }
+
+    pub fn celtic_progress_counter(&self, point: &Point, text: &str) {
+        self.context.save();
+
+        // ケルト風の装飾枠を描画
+        let box_width = 120.0;
+        let box_height = 50.0;
+        let x = point.x as f64 - box_width / 2.0;
+        let y = point.y as f64 - box_height / 2.0;
+
+        // テキストに影を追加（グロー効果）
+        self.context.set_shadow_blur(8.0);
+        self.context.set_shadow_color("#72F285");
+        self.context.set_shadow_offset_x(0.0);
+        self.context.set_shadow_offset_y(0.0);
+
+        // テキストを描画
+        self.context.set_fill_style_str("#72F285");
+        self.context.set_text_align("center");
+        self.context.set_font("32px MyFont");
+        let _ = self.context.fill_text(text, point.x as f64, (point.y + 8.0) as f64);
+
+        self.context.restore();
+    }
     pub fn line(&self, a: &Point, b: &Point, color: Color) {
         self.context.set_stroke_style_str(&color.get());
         self.context.set_fill_style_str(&color.get());
@@ -209,7 +233,7 @@ impl Renderer {
         let card_left = -(width / 2.0) as f64;
         let card_top = -(height / 2.0 + 350.0) as f64;
         let center_x = card_left + (width / 2.0) as f64;
-        let center_y = card_top + (height / 2.0) as f64 - 80.0; // テキストの上
+        let center_y = card_top + (height / 2.0 - 25.0) as f64 - 80.0; // テキストの上
 
         // 背景全体にケルト文様の枠線を描画
         self.context.set_line_width(1.5);
@@ -459,140 +483,10 @@ impl Renderer {
 
         // 5. テキストを描画（同じ回転座標系で）
         self.context.set_text_align("center");
-        self.context.set_font("24px MyFont");
+        self.context.set_font("18px MyFont");
         self.context.set_fill_style_str("white");
         // カードの中心にテキストを配置（Y座標は-350でカードの中央）
         let _ = self.context.fill_text(&text, 0.0, -340.0);
-
-        self.context.restore();
-    }
-
-    pub fn draw_tarot_background(&self, width: f32, height: f32) {
-        self.context.save();
-
-        // 背景を黒で塗りつぶし
-        self.context.set_fill_style_str("#000000");
-        self.context
-            .fill_rect(0.0, 0.0, width as f64, height as f64);
-
-        // タロット風の装飾を描画
-        self.context.set_stroke_style_str("rgba(138, 43, 226, 0.3)"); // 紫色
-        self.context.set_line_width(1.5);
-
-        let center_x = (width / 2.0) as f64;
-        let center_y = (height / 2.0) as f64;
-
-        // 中央に大きな円を描画
-        self.context.begin_path();
-        let _ = self
-            .context
-            .arc(center_x, center_y, 200.0, 0.0, 2.0 * std::f64::consts::PI);
-        self.context.stroke();
-
-        // 中央の円の内側にもう一つ円を描画
-        self.context.begin_path();
-        let _ = self
-            .context
-            .arc(center_x, center_y, 180.0, 0.0, 2.0 * std::f64::consts::PI);
-        self.context.stroke();
-
-        // 8方向に放射線を描画
-        for i in 0..8 {
-            let angle = (i as f64) * std::f64::consts::PI / 4.0;
-            let x1 = center_x + 180.0 * angle.cos();
-            let y1 = center_y + 180.0 * angle.sin();
-            let x2 = center_x + 200.0 * angle.cos();
-            let y2 = center_y + 200.0 * angle.sin();
-
-            self.context.begin_path();
-            self.context.move_to(x1, y1);
-            self.context.line_to(x2, y2);
-            self.context.stroke();
-        }
-
-        // 四隅に星のような模様を描画
-        let corners = [
-            (50.0, 50.0),                                // 左上
-            (width as f64 - 50.0, 50.0),                 // 右上
-            (50.0, height as f64 - 50.0),                // 左下
-            (width as f64 - 50.0, height as f64 - 50.0), // 右下
-        ];
-
-        self.context.set_stroke_style_str("rgba(255, 215, 0, 0.4)"); // 金色
-        self.context.set_line_width(1.0);
-
-        for (cx, cy) in corners.iter() {
-            // 5点の星を描画
-            self.context.begin_path();
-            for i in 0..6 {
-                let angle =
-                    (i as f64) * std::f64::consts::PI * 2.0 / 5.0 - std::f64::consts::PI / 2.0;
-                let radius = if i % 2 == 0 { 15.0 } else { 7.0 };
-                let x = cx + radius * angle.cos();
-                let y = cy + radius * angle.sin();
-
-                if i == 0 {
-                    self.context.move_to(x, y);
-                } else {
-                    self.context.line_to(x, y);
-                }
-            }
-            self.context.close_path();
-            self.context.stroke();
-        }
-
-        // 画面上部と下部に装飾的な線を描画
-        self.context.set_stroke_style_str("rgba(138, 43, 226, 0.4)");
-        self.context.set_line_width(2.0);
-
-        // 上部の装飾線
-        self.context.begin_path();
-        self.context.move_to(50.0, 100.0);
-        self.context.line_to(width as f64 - 50.0, 100.0);
-        self.context.stroke();
-
-        // 下部の装飾線
-        self.context.begin_path();
-        self.context.move_to(50.0, height as f64 - 100.0);
-        self.context
-            .line_to(width as f64 - 50.0, height as f64 - 100.0);
-        self.context.stroke();
-
-        // 中央に六芒星（ダビデの星）を描画
-        self.context.set_stroke_style_str("rgba(138, 43, 226, 0.2)");
-        self.context.set_line_width(1.5);
-
-        let star_radius = 100.0;
-
-        // 上向き三角形
-        self.context.begin_path();
-        for i in 0..4 {
-            let angle = (i as f64) * std::f64::consts::PI * 2.0 / 3.0 - std::f64::consts::PI / 2.0;
-            let x = center_x + star_radius * angle.cos();
-            let y = center_y + star_radius * angle.sin();
-
-            if i == 0 {
-                self.context.move_to(x, y);
-            } else {
-                self.context.line_to(x, y);
-            }
-        }
-        self.context.stroke();
-
-        // 下向き三角形
-        self.context.begin_path();
-        for i in 0..4 {
-            let angle = (i as f64) * std::f64::consts::PI * 2.0 / 3.0 + std::f64::consts::PI / 2.0;
-            let x = center_x + star_radius * angle.cos();
-            let y = center_y + star_radius * angle.sin();
-
-            if i == 0 {
-                self.context.move_to(x, y);
-            } else {
-                self.context.line_to(x, y);
-            }
-        }
-        self.context.stroke();
 
         self.context.restore();
     }

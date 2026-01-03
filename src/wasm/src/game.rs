@@ -203,6 +203,9 @@ impl GameStageState<Playing> {
                 self.material.removing_card = Some(self.material.cards.remove(0));
                 self.material.next_card_ready = false;
 
+                // プログレスカウンターを更新
+                self.material.current_card_index += 1;
+
                 // 次のカードの自動回転を停止
                 if let Some(next_card) = self.material.cards.first_mut() {
                     next_card.stop_auto_rotating();
@@ -326,6 +329,8 @@ pub struct Material {
     cards: Vec<Card>,            // カードの配列（最大{FLASH_CARD_NUMBERS}枚）
     removing_card: Option<Card>, // 削除中のカード
     next_card_ready: bool,       // 次のカードの準備完了フラグ
+    current_card_index: i32,     // 現在のカード番号（1から始まる）
+    total_cards: i32,            // 総カード枚数
 }
 impl Material {
     /// 新しいMaterialインスタンスを作成
@@ -336,8 +341,8 @@ impl Material {
         // {FLASH_CARD_NUMBERS} 個のカードを作成
         for i in 0..FLASH_CARD_NUMBERS {
             // ITEMSの範囲内でループさせる
-            let front_text = FRONT_ITEMS[(i % ITEM_SIZE as i32) as usize];
-            let back_text = BACK_ITEMS[(i % ITEM_SIZE as i32) as usize];
+            let front_text = ITEMS[(i % ITEM_SIZE as i32) as usize].0;
+            let back_text = ITEMS[(i % ITEM_SIZE as i32) as usize].1;
             let card = Card::new(
                 Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
                 FLASH_CARD_WIDTH,
@@ -354,6 +359,8 @@ impl Material {
             cards: cards,
             removing_card: None,
             next_card_ready: false,
+            current_card_index: 1,
+            total_cards: FLASH_CARD_NUMBERS,
         }
     }
     /// Materialをリセット（新しいインスタンスを作成）
@@ -379,6 +386,16 @@ impl Material {
                 card.draw(_renderer);
             }
         }
+
+        // プログレスカウンターを描画（カードの上部・ケルト風）
+        let progress_text = format!("{}/{}", self.current_card_index, self.total_cards);
+        _renderer.celtic_progress_counter(
+            &Point {
+                x: SCREEN_WIDTH / 2.0,
+                y: PROGRESS_COUNTER_Y,
+            },
+            &progress_text,
+        );
     }
 }
 
