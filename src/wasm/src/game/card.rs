@@ -103,10 +103,21 @@ pub mod card {
         pub fn is_auto_rotating(&self) -> bool {
             self.auto_rotating != 0
         }
+        pub fn get_rotate_direction(&self) -> i32 {
+            self.auto_rotating
+        }
         pub fn stop_auto_rotating(&mut self) {
             self.auto_rotating = 0;
             self.rotate = 0.0;
             self.alpha = 1.0;
+        }
+        pub fn reset_card(&mut self) {
+            self.auto_rotating = 0;
+            self.rotate = 0.0;
+            self.alpha = 1.0;
+            self.face_state = 0;  // 表面に戻す
+            self.flip_angle = 0.0;
+            self.is_flipping = false;
         }
         pub fn toggle_face(&mut self) {
             // フリップアニメーション開始

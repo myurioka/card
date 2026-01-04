@@ -177,57 +177,6 @@ impl Renderer {
         self.context.fill();
     }
 
-    pub fn fill_round_rect_rotate(
-        &self,
-        cp: &Point, // 中心座標
-        rotate: f32,
-        width: f32,
-        height: f32,
-        radius: f32,
-        color: Color,
-        alpha: f32,
-        text: &str,
-    ) {
-        self.context.save();
-        self.context.set_global_alpha(alpha.into());
-        self.context.set_stroke_style_str(&color.get());
-        self.context.set_fill_style_str(&color.get());
-        self.context.begin_path();
-
-        // 1. 回転中心(cp.x, cp.y + 350)に移動
-        let _ = self.context.translate(cp.x as f64, (cp.y + 380.0) as f64);
-
-        // 2. 回転
-        let _ = self.context.rotate(rotate as f64);
-
-        // 3. 矩形を描画（回転中心から見た相対位置で描画）
-        // カードの中心がcpになるように、回転軸から-350だけY方向にオフセット
-        let _ = self.context.round_rect_with_f64(
-            -(width / 2.0) as f64,
-            -(height / 2.0 + 350.0) as f64,
-            width as f64,
-            height as f64,
-            radius as f64,
-        );
-
-        let _ = self.context.close_path();
-        self.context.fill();
-
-        // 装飾パターンを描画（表裏で異なるデザイン）
-        // is_front: true=表面（ケルト風）、false=裏面（星座風）
-        let is_front = color.get() == Color::Green.get();
-        self.draw_card_decoration(width, height, is_front);
-
-        // 4. テキストを描画（同じ回転座標系で）
-        self.context.set_text_align("center");
-        self.context.set_font("24px MyFont");
-        self.context.set_fill_style_str("white");
-        // カードの中心にテキストを配置（Y座標は-350でカードの中央）
-        let _ = self.context.fill_text(&text, 0.0, -380.0);
-
-        self.context.restore();
-    }
-
     fn draw_card_decoration(&self, width: f32, height: f32, is_front: bool) {
         self.context.set_fill_style_str("rgba(255, 255, 255, 0.3)");
         self.context
@@ -648,6 +597,128 @@ impl Renderer {
             );
             self.context.stroke();
         }
+    }
+
+    // 緑色のケルト風メッセージウィンドウを描画（カードと完全に同じデザイン）
+    pub fn draw_message_window(&self, point: &Point, message: &str) {
+        self.context.save();
+
+        // カードと同じサイズ
+        let box_width = 350.0;  // FLASH_CARD_WIDTH
+        let box_height = 480.0; // FLASH_CARD_HEIGHT
+        let x = point.x as f64 - box_width / 2.0;
+        let y = point.y as f64 - box_height / 2.0;
+        let radius = 10.0; // FLASH_CARD_CORNER_RADIUS
+
+        // 緑色の背景（カードと同じ色）
+        self.context.set_fill_style_str(&Color::Green.get());
+        self.context.begin_path();
+        let _ = self.context.round_rect_with_f64(x, y, box_width, box_height, radius);
+        self.context.fill();
+
+        // カードと完全に同じケルト風装飾を描画
+        self.context.set_fill_style_str("rgba(255, 255, 255, 0.3)");
+        self.context.set_stroke_style_str("rgba(255, 255, 255, 0.5)");
+        self.context.set_line_width(2.5);
+
+        // 背景全体にケルト文様の枠線を描画（カードと同じ）
+        let border_offset = 10.0;
+        self.context.set_line_width(1.5);
+        self.context.set_stroke_style_str("rgba(255, 255, 255, 0.2)");
+
+        // 外側の二重線
+        self.context.begin_path();
+        let _ = self.context.round_rect_with_f64(
+            x + border_offset,
+            y + border_offset,
+            box_width - border_offset * 2.0,
+            box_height - border_offset * 2.0,
+            radius - 2.0,
+        );
+        self.context.stroke();
+
+        // 内側の二重線
+        self.context.begin_path();
+        let _ = self.context.round_rect_with_f64(
+            x + border_offset + 4.0,
+            y + border_offset + 4.0,
+            box_width - (border_offset + 4.0) * 2.0,
+            box_height - (border_offset + 4.0) * 2.0,
+            radius - 4.0,
+        );
+        self.context.stroke();
+
+        // 四隅にケルト結び目を配置
+        let knot_size = 15.0;
+        let corner_offset = 35.0;
+        let corners = [
+            (x + corner_offset, y + corner_offset),
+            (x + box_width - corner_offset, y + corner_offset),
+            (x + corner_offset, y + box_height - corner_offset),
+            (x + box_width - corner_offset, y + box_height - corner_offset),
+        ];
+
+        for &(cx, cy) in corners.iter() {
+            self.draw_celtic_knot_small(cx, cy, knot_size);
+        }
+
+        // 中央上部に円形の装飾パターンを追加（カードと同じスタイル）
+        let center_x = x + box_width / 2.0;
+        let center_y_top = y + 100.0;
+        let circle_radius = 50.0;
+
+        // 外側の円
+        self.context.set_stroke_style_str("rgba(255, 255, 255, 0.3)");
+        self.context.set_line_width(3.0);
+        self.context.begin_path();
+        let _ = self.context.arc(center_x, center_y_top, circle_radius, 0.0, 2.0 * std::f64::consts::PI);
+        self.context.stroke();
+
+        // 内側の円
+        self.context.set_line_width(2.0);
+        self.context.begin_path();
+        let _ = self.context.arc(center_x, center_y_top, circle_radius * 0.7, 0.0, 2.0 * std::f64::consts::PI);
+        self.context.stroke();
+
+        // 中心の小さい円
+        self.context.set_line_width(1.5);
+        self.context.begin_path();
+        let _ = self.context.arc(center_x, center_y_top, circle_radius * 0.3, 0.0, 2.0 * std::f64::consts::PI);
+        self.context.stroke();
+
+        // メッセージエリアを囲む装飾的なケルトラインを追加
+        self.context.set_stroke_style_str("rgba(255, 255, 255, 0.25)");
+        self.context.set_line_width(1.5);
+
+        // 上部の装飾ライン
+        let line_y_top = y + 180.0;
+        self.context.begin_path();
+        self.context.move_to(x + 50.0, line_y_top);
+        self.context.line_to(x + box_width - 50.0, line_y_top);
+        self.context.stroke();
+
+        // 下部の装飾ライン
+        let line_y_bottom = y + box_height - 180.0;
+        self.context.begin_path();
+        self.context.move_to(x + 50.0, line_y_bottom);
+        self.context.line_to(x + box_width - 50.0, line_y_bottom);
+        self.context.stroke();
+
+        // メッセージテキストを描画（グロー効果付き）
+        self.context.set_shadow_blur(10.0);
+        self.context.set_shadow_color("#72F285");
+        self.context.set_shadow_offset_x(0.0);
+        self.context.set_shadow_offset_y(0.0);
+
+        self.context.set_fill_style_str("white");
+        self.context.set_text_align("center");
+        self.context.set_font("24px MyFont");
+
+        // カードの中央にメッセージを配置
+        let text_y = y + box_height / 2.0;
+        let _ = self.context.fill_text(message, center_x, text_y);
+
+        self.context.restore();
     }
 }
 

@@ -57,10 +57,10 @@ impl GameStageStateMachine {
     /// 現在の状態に応じて描画を行う
     fn draw(&self, renderer: &Renderer) {
         match self {
-            GameStageStateMachine::Playing(state) => state.material.draw(renderer),
-            GameStageStateMachine::DisplayMessage(state) => state.material.draw(renderer),
-            GameStageStateMachine::GameOver(state) => state.material.draw(renderer),
-            GameStageStateMachine::GameClear(state) => state.material.draw(renderer),
+            GameStageStateMachine::Playing(state) => state.material.draw(renderer, true),
+            GameStageStateMachine::DisplayMessage(state) => state.material.draw(renderer, true),
+            GameStageStateMachine::GameOver(state) => state.material.draw(renderer, true),
+            GameStageStateMachine::GameClear(state) => state.material.draw(renderer, false),
         };
     }
 }
@@ -191,34 +191,49 @@ impl GameStageState<Playing> {
             }
         }
 
-        // カードの回転が閾値(FLASH_CARD_ERASE_POINT_ROTATE)を超えたら削除
+        // カードの回転が閾値(FLASH_CARD_ERASE_POINT_ROTATE)を超えたら削除または配列末尾へ移動
         if let Some(card) = self.material.cards.first() {
             if card.should_remove() {
+                let rotate_direction = card.get_rotate_direction();
+
                 // 入力状態をクリア
                 _keystate.clear();
                 _touchstate.clear();
                 _mousestate.clear();
 
-                // 削除中のカードとして保存
-                self.material.removing_card = Some(self.material.cards.remove(0));
-                self.material.next_card_ready = false;
+                if rotate_direction == -1 {
+                    // 左回転: カードを配列から削除
+                    self.material.removing_card = Some(self.material.cards.remove(0));
+                    self.material.next_card_ready = false;
 
-                // プログレスカウンターを更新
-                self.material.current_card_index += 1;
+                    // プログレスカウンターを更新
+                    self.material.current_card_index += 1;
 
-                // 次のカードの自動回転を停止
-                if let Some(next_card) = self.material.cards.first_mut() {
-                    next_card.stop_auto_rotating();
-                }
+                    // 次のカードの自動回転を停止
+                    if let Some(next_card) = self.material.cards.first_mut() {
+                        next_card.stop_auto_rotating();
+                    }
 
-                // 全てのカードがなくなったらゲームクリア
-                if self.material.cards.is_empty() {
-                    // 少し待ってから削除中のカードもクリア
-                    self.material.removing_card = None;
-                    return PlayingEndState::GameClear(GameStageState {
-                        _state: GameClear,
-                        material: self.material,
-                    });
+                    // 全てのカードがなくなったらゲームクリア
+                    if self.material.cards.is_empty() {
+                        self.material.removing_card = None;
+                        return PlayingEndState::GameClear(GameStageState {
+                            _state: GameClear,
+                            material: self.material,
+                        });
+                    }
+                } else if rotate_direction == 1 {
+                    // 右回転: カードを配列の最後に移動（プログレスカウンターは進めない）
+                    let mut removed_card = self.material.cards.remove(0);
+                    self.material.removing_card = Some(removed_card.clone());
+                    removed_card.reset_card(); // カードの状態を完全にリセット（表面に戻す）
+                    self.material.cards.push(removed_card); // 配列の最後に追加
+                    self.material.next_card_ready = false;
+
+                    // 次のカードの自動回転を停止
+                    if let Some(next_card) = self.material.cards.first_mut() {
+                        next_card.stop_auto_rotating();
+                    }
                 }
             }
         }
@@ -297,7 +312,10 @@ impl GameStageState<GameClear> {
         _touchstate: &mut TouchState,
         _mousestate: &mut MouseState,
     ) -> GameClearEndState {
-        if _keystate.is_pressed("Space") {
+        // スペースキー、タッチ、またはクリックでゲームを再開
+        if _keystate.is_pressed("Space")
+            || _touchstate.is_tapped()
+            || _mousestate.is_clicked() {
             GameClearEndState::Complete(self.new_game())
         } else {
             GameClearEndState::Continue(self)
@@ -371,7 +389,8 @@ impl Material {
     }
     /// カードを描画
     /// 削除中のカードがある場合はそれを描画し、準備完了なら次のカードも表示
-    fn draw(&self, _renderer: &Renderer) {
+    /// show_progress: プログレスカウンターを表示するかどうか
+    fn draw(&self, _renderer: &Renderer, show_progress: bool) {
         // 次のカードを先に描画（背面）
         if self.next_card_ready {
             if let Some(card) = self.cards.get(0) {
@@ -390,26 +409,29 @@ impl Material {
         }
 
         // プログレスカウンターを描画（カードの上部・ケルト風）
-        // カードの表裏に応じて色を変更
-        let counter_color = if let Some(card) = self.cards.first() {
-            if card.get_face_state() == 0 {
-                Color::MintGreen.get() // 表面: ミントグリーン
+        // ゲームクリア時は非表示
+        if show_progress {
+            // カードの表裏に応じて色を変更
+            let counter_color = if let Some(card) = self.cards.first() {
+                if card.get_face_state() == 0 {
+                    Color::MintGreen.get() // 表面: ミントグリーン
+                } else {
+                    Color::RoyalBlue.get() // 裏面: ロイヤルブルー
+                }
             } else {
-                Color::RoyalBlue.get() // 裏面: ロイヤルブルー
-            }
-        } else {
-            Color::MintGreen.get() // デフォルト
-        };
+                Color::MintGreen.get() // デフォルト
+            };
 
-        let progress_text = format!("{}/{}", self.current_card_index, self.total_cards);
-        _renderer.celtic_progress_counter(
-            &Point {
-                x: SCREEN_WIDTH / 2.0,
-                y: PROGRESS_COUNTER_Y,
-            },
-            &progress_text,
-            &counter_color,
-        );
+            let progress_text = format!("{}/{}", self.current_card_index, self.total_cards);
+            _renderer.celtic_progress_counter(
+                &Point {
+                    x: SCREEN_WIDTH / 2.0,
+                    y: PROGRESS_COUNTER_Y,
+                },
+                &progress_text,
+                &counter_color,
+            );
+        }
     }
 }
 
@@ -473,19 +495,12 @@ impl Game for GameStage {
                 );
             }
             Some(GameStageStateMachine::GameClear(_state)) => {
-                // 最初のカードのみ描画
-                if let Some(card) = _state.material.cards.first() {
-                    card.draw(renderer);
-                }
-                let _ = renderer.text(
+                renderer.draw_message_window(
                     &Point {
                         x: SCREEN_WIDTH / 2.0,
                         y: GAMECLEAR_MESSAGE_Y,
                     },
                     GAMECLEAR_MESSAGE,
-                    Align::Center,
-                    Font::Middle,
-                    Color::Green,
                 );
             }
             _ => {}
