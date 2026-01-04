@@ -128,26 +128,28 @@ impl Renderer {
         let _ = self.context.fill_text(text, point.x as f64, point.y as f64);
     }
 
-    pub fn celtic_progress_counter(&self, point: &Point, text: &str) {
+    pub fn celtic_progress_counter(&self, point: &Point, text: &str, color: &str) {
         self.context.save();
 
         // ケルト風の装飾枠を描画
         let box_width = 120.0;
         let box_height = 50.0;
-        let x = point.x as f64 - box_width / 2.0;
-        let y = point.y as f64 - box_height / 2.0;
+        let _x = point.x as f64 - box_width / 2.0;
+        let _y = point.y as f64 - box_height / 2.0;
 
         // テキストに影を追加（グロー効果）
         self.context.set_shadow_blur(8.0);
-        self.context.set_shadow_color("#72F285");
+        self.context.set_shadow_color(color);
         self.context.set_shadow_offset_x(0.0);
         self.context.set_shadow_offset_y(0.0);
 
         // テキストを描画
-        self.context.set_fill_style_str("#72F285");
+        self.context.set_fill_style_str(color);
         self.context.set_text_align("center");
         self.context.set_font("32px MyFont");
-        let _ = self.context.fill_text(text, point.x as f64, (point.y + 8.0) as f64);
+        let _ = self
+            .context
+            .fill_text(text, point.x as f64, (point.y + 8.0) as f64);
 
         self.context.restore();
     }
@@ -211,8 +213,10 @@ impl Renderer {
         let _ = self.context.close_path();
         self.context.fill();
 
-        // 装飾パターンを描画（トランプ風）
-        self.draw_card_decoration(width, height);
+        // 装飾パターンを描画（表裏で異なるデザイン）
+        // is_front: true=表面（ケルト風）、false=裏面（星座風）
+        let is_front = color.get() == Color::Green.get();
+        self.draw_card_decoration(width, height, is_front);
 
         // 4. テキストを描画（同じ回転座標系で）
         self.context.set_text_align("center");
@@ -224,7 +228,7 @@ impl Renderer {
         self.context.restore();
     }
 
-    fn draw_card_decoration(&self, width: f32, height: f32) {
+    fn draw_card_decoration(&self, width: f32, height: f32, is_front: bool) {
         self.context.set_fill_style_str("rgba(255, 255, 255, 0.3)");
         self.context
             .set_stroke_style_str("rgba(255, 255, 255, 0.5)");
@@ -235,6 +239,13 @@ impl Renderer {
         let center_x = card_left + (width / 2.0) as f64;
         let center_y = card_top + (height / 2.0 - 25.0) as f64 - 80.0; // テキストの上
 
+        if !is_front {
+            // 裏面：星座風のデザイン
+            self.draw_constellation_pattern(card_left, card_top, center_x, center_y, width, height);
+            return;
+        }
+
+        // 表面：ケルト風のデザイン（以下は既存のコード）
         // 背景全体にケルト文様の枠線を描画
         self.context.set_line_width(1.5);
         self.context
@@ -449,6 +460,7 @@ impl Renderer {
         alpha: f32,
         text: &str,
         flip_angle: f32, // フリップ角度
+        etymology: Vec<&str>,
     ) {
         self.context.save();
         self.context.set_global_alpha(alpha.into());
@@ -478,17 +490,164 @@ impl Renderer {
         let _ = self.context.close_path();
         self.context.fill();
 
-        // 装飾パターンを描画（トランプ風）
-        self.draw_card_decoration(width, height);
+        // 5. 装飾パターンを描画（表裏で異なるデザイン）
+        let is_front = color.get() == Color::Green.get();
+        self.draw_card_decoration(width, height, is_front);
 
-        // 5. テキストを描画（同じ回転座標系で）
+        // 6. テキストを描画（同じ回転座標系で）
         self.context.set_text_align("center");
         self.context.set_font("18px MyFont");
         self.context.set_fill_style_str("white");
-        // カードの中心にテキストを配置（Y座標は-350でカードの中央）
         let _ = self.context.fill_text(&text, 0.0, -340.0);
 
+        // 7. 裏面 語源テキストを描画
+        if !is_front {
+            self.context.set_text_align("center");
+            self.context.set_font("14px MyFont");
+            self.context.set_fill_style_str("rgba(255, 255, 255, 0.8)");
+
+            // 各語源テキストを順番に描画（Y座標を下にずらしていく）
+            let start_y = -300.0; // 開始Y座標
+            let line_height = 20.0; // 行間
+
+            for (i, etym) in etymology.iter().enumerate() {
+                self.context.set_text_align("left");
+                let y = start_y + (i as f64) * line_height;
+                let _ = self.context.fill_text(etym, -140.0, y);
+            }
+        }
+
         self.context.restore();
+    }
+
+    // 裏面用のケルト風パターンを描画（トリケトラ＋円形デザイン）
+    fn draw_constellation_pattern(
+        &self,
+        card_left: f64,
+        card_top: f64,
+        center_x: f64,
+        center_y: f64,
+        width: f32,
+        height: f32,
+    ) {
+        // 二重枠（ケルト風）
+        self.context.set_line_width(2.0);
+        self.context
+            .set_stroke_style_str("rgba(255, 255, 255, 0.4)");
+
+        let border_offset = 10.0;
+        self.context.begin_path();
+        let _ = self.context.round_rect_with_f64(
+            card_left + border_offset,
+            card_top + border_offset,
+            width as f64 - border_offset * 2.0,
+            height as f64 - border_offset * 2.0,
+            8.0,
+        );
+        self.context.stroke();
+
+        // 中央の円形ケルトノット
+        self.context.set_line_width(3.0);
+        self.context
+            .set_stroke_style_str("rgba(255, 255, 255, 0.6)");
+
+        // 外側の円
+        self.context.begin_path();
+        let _ = self
+            .context
+            .arc(center_x, center_y, 70.0, 0.0, 2.0 * std::f64::consts::PI);
+        self.context.stroke();
+
+        // 内側の円
+        self.context.begin_path();
+        let _ = self
+            .context
+            .arc(center_x, center_y, 50.0, 0.0, 2.0 * std::f64::consts::PI);
+        self.context.stroke();
+
+        // トリケトラ（3つの葉のケルトシンボル）を中央に描画
+        self.draw_triquetra(center_x, center_y, 40.0);
+
+        // 四隅にケルト結び目を配置
+        let corner_positions = [
+            (card_left + 35.0, card_top + 35.0),
+            (card_left + width as f64 - 35.0, card_top + 35.0),
+            (card_left + 35.0, card_top + height as f64 - 35.0),
+            (
+                card_left + width as f64 - 35.0,
+                card_top + height as f64 - 35.0,
+            ),
+        ];
+
+        for &(cx, cy) in corner_positions.iter() {
+            self.draw_celtic_knot_small(cx, cy, 15.0);
+        }
+    }
+
+    // トリケトラ（三位一体のケルトシンボル）を描画
+    fn draw_triquetra(&self, cx: f64, cy: f64, radius: f64) {
+        self.context.set_line_width(2.5);
+        self.context
+            .set_stroke_style_str("rgba(255, 255, 255, 0.8)");
+        self.context.set_fill_style_str("rgba(255, 255, 255, 0.2)");
+
+        // 3つの円弧でトリケトラを形成
+        for i in 0..3 {
+            let angle = (i as f64) * 2.0 * std::f64::consts::PI / 3.0 - std::f64::consts::PI / 2.0;
+            let arc_cx = cx + radius * 0.5 * angle.cos();
+            let arc_cy = cy + radius * 0.5 * angle.sin();
+
+            self.context.begin_path();
+            let _ = self.context.arc(
+                arc_cx,
+                arc_cy,
+                radius * 0.8,
+                angle + std::f64::consts::PI * 0.6,
+                angle + std::f64::consts::PI * 1.4,
+            );
+            self.context.stroke();
+        }
+
+        // 中央の小さな三角形
+        self.context.begin_path();
+        for i in 0..3 {
+            let angle = (i as f64) * 2.0 * std::f64::consts::PI / 3.0 - std::f64::consts::PI / 2.0;
+            let x = cx + radius * 0.25 * angle.cos();
+            let y = cy + radius * 0.25 * angle.sin();
+
+            if i == 0 {
+                self.context.move_to(x, y);
+            } else {
+                self.context.line_to(x, y);
+            }
+        }
+        let _ = self.context.close_path();
+        self.context.fill();
+        self.context.stroke();
+    }
+
+    // 小さなケルト結び目を描画
+    fn draw_celtic_knot_small(&self, cx: f64, cy: f64, size: f64) {
+        self.context.set_line_width(1.5);
+        self.context
+            .set_stroke_style_str("rgba(255, 255, 255, 0.5)");
+
+        // 4つの円弧で結び目を形成
+        for i in 0..4 {
+            let angle = (i as f64) * std::f64::consts::PI / 2.0;
+            let start_x = cx + size * angle.cos();
+            let start_y = cy + size * angle.sin();
+
+            self.context.begin_path();
+            let _ = self.context.arc(
+                start_x,
+                start_y,
+                size * 0.6,
+                angle + std::f64::consts::PI,
+                angle + std::f64::consts::PI * 1.5,
+            );
+            self.context.stroke();
+        }
     }
 }
 

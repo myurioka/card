@@ -343,6 +343,7 @@ impl Material {
             // ITEMSの範囲内でループさせる
             let front_text = ITEMS[(i % ITEM_SIZE as i32) as usize].0;
             let back_text = ITEMS[(i % ITEM_SIZE as i32) as usize].1;
+            let etymologies = ITEMS[(i % ITEM_SIZE as i32) as usize].2;
             let card = Card::new(
                 Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
                 FLASH_CARD_WIDTH,
@@ -350,6 +351,7 @@ impl Material {
                 Color::Green,
                 front_text,
                 back_text,
+                etymologies,
             );
             cards.push(card);
         }
@@ -388,6 +390,17 @@ impl Material {
         }
 
         // プログレスカウンターを描画（カードの上部・ケルト風）
+        // カードの表裏に応じて色を変更
+        let counter_color = if let Some(card) = self.cards.first() {
+            if card.get_face_state() == 0 {
+                Color::MintGreen.get() // 表面: ミントグリーン
+            } else {
+                Color::RoyalBlue.get() // 裏面: ロイヤルブルー
+            }
+        } else {
+            Color::MintGreen.get() // デフォルト
+        };
+
         let progress_text = format!("{}/{}", self.current_card_index, self.total_cards);
         _renderer.celtic_progress_counter(
             &Point {
@@ -395,6 +408,7 @@ impl Material {
                 y: PROGRESS_COUNTER_Y,
             },
             &progress_text,
+            &counter_color,
         );
     }
 }
@@ -459,13 +473,17 @@ impl Game for GameStage {
                 );
             }
             Some(GameStageStateMachine::GameClear(_state)) => {
+                // 最初のカードのみ描画
+                if let Some(card) = _state.material.cards.first() {
+                    card.draw(renderer);
+                }
                 let _ = renderer.text(
                     &Point {
                         x: SCREEN_WIDTH / 2.0,
                         y: GAMECLEAR_MESSAGE_Y,
                     },
                     GAMECLEAR_MESSAGE,
-                    Align::Left,
+                    Align::Center,
                     Font::Middle,
                     Color::Green,
                 );

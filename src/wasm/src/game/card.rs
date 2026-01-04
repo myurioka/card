@@ -4,18 +4,21 @@ pub mod card {
 
     #[derive(Clone, Default)]
     pub struct Card {
-        cp: Point,          // center of the card
-        width: f32,         // card width
-        height: f32,        // card height
-        color: Color,       // color of the card
-        rotate: f32,        // angle
-        front_text: String, // text in the card
-        back_text: String,  // text in the card
-        face_state: i32,    // 0: front, 1: back
+        cp: Point,              // center of the card
+        width: f32,             // card width
+        height: f32,            // card height
+        color: Color,           // color of the card (deprecated, use front_color/back_color)
+        rotate: f32,            // angle
+        front_text: String,     // text on the front of the card
+        back_text: String,      // text on the back of the card
+        etymology: Vec<String>, // etymologies on the back of the card
+        face_state: i32,        // 0: front, 1: back
         alpha: f32,
         auto_rotating: i32, // rotate direction: 0: none, 1: right, -1:left
         flip_angle: f32,    // フリップアニメーション用の角度 (0.0 ~ π)
         is_flipping: bool,  // フリップアニメーション中かどうか
+        front_color: Color, // 表面の色
+        back_color: Color,  // 裏面の色
     }
     impl Card {
         pub fn new(
@@ -25,12 +28,13 @@ pub mod card {
             color: Color,
             front_text: &str,
             back_text: &str,
+            etymology: &[&str],
         ) -> Self {
             Card {
                 cp: cp,                             // Center of the Card
                 width: width,                       // Card Width
                 height: height,                     // Card Height
-                color: color,                       // Card Color
+                color: color,                       // Card Color (deprecated)
                 rotate: 0.0,                        // Card Rotate
                 front_text: front_text.to_string(), // Card Front Text
                 back_text: back_text.to_string(),   // Card Back Text
@@ -39,6 +43,9 @@ pub mod card {
                 auto_rotating: 0, // 0:non_rotate 1:rotate
                 flip_angle: 0.0,
                 is_flipping: false,
+                front_color: Color::Green,    // 表面は緑色（日本語）
+                back_color: Color::RoyalBlue, // 裏面はロイヤルブルー（英語）
+                etymology: etymology.iter().map(|s| s.to_string()).collect(),
             }
         }
         pub fn rotate_left(&mut self) {
@@ -60,7 +67,7 @@ pub mod card {
         pub fn update(&mut self) {
             // フリップアニメーション処理
             if self.is_flipping {
-                self.flip_angle += 0.35; // フリップ速度（0.25から0.35に増速）
+                self.flip_angle += 0.4; // フリップ速度（0.4 より大きい数値は設定不可）
 
                 // 半分（π/2）まで回転したら表裏を切り替え
                 if self.flip_angle >= std::f32::consts::PI / 2.0
@@ -119,13 +126,20 @@ pub mod card {
             &self.back_text
         }
 
+        pub fn get_face_state(&self) -> i32 {
+            self.face_state
+        }
+
         pub fn draw(&self, renderer: &Renderer) {
             // カードの矩形を描画
-            let text = if self.face_state == 0 {
-                &self.front_text
+            let (text, color) = if self.face_state == 0 {
+                (&self.front_text, self.front_color)
             } else {
-                &self.back_text
+                (&self.back_text, self.back_color)
             };
+
+            // etymology を &str のベクタに変換
+            let etymology_refs: Vec<&str> = self.etymology.iter().map(|s| s.as_str()).collect();
 
             renderer.fill_round_rect_rotate_with_flip(
                 &Point {
@@ -136,10 +150,11 @@ pub mod card {
                 self.width,               // Card Width
                 self.height,              // Card Height
                 FLASH_CARD_CORNER_RADIUS, // Card Conner Radius
-                self.color,               // Card Color
+                color,                    // 表裏に応じた色
                 self.alpha,
                 text,
                 self.flip_angle, // フリップ角度
+                etymology_refs,
             );
         }
     }
