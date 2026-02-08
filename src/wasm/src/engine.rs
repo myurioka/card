@@ -720,6 +720,69 @@ impl Renderer {
 
         self.context.restore();
     }
+
+    // リセットボタン（リロードアイコン）を描画
+    pub fn draw_reset_button(&self, color: Color) {
+        self.context.save();
+
+        let x = RESET_BUTTON_X as f64;
+        let y = RESET_BUTTON_Y as f64;
+        let radius = 18.0; // 円の半径
+
+        // 円形矢印を描画（カードの色に合わせる）
+        self.context.set_stroke_style_str(&color.get());
+        self.context.set_line_width(3.0);
+        self.context.set_line_cap("round");
+
+        // 右上から始まる円弧（3/4周）
+        self.context.begin_path();
+        let start_angle = -std::f64::consts::PI / 4.0; // -45度（右上）
+        let end_angle = start_angle + 3.0 * std::f64::consts::PI / 2.0; // 270度回転
+        let _ = self.context.arc(x, y, radius - 5.0, start_angle, end_angle);
+        self.context.stroke();
+
+        // 矢印の先端（三角形）を描画
+        let arrow_angle = end_angle;
+        let arrow_x = x + (radius - 5.0) * arrow_angle.cos();
+        let arrow_y = y + (radius - 5.0) * arrow_angle.sin();
+
+        // 矢印の方向を計算（円の接線方向）
+        let tangent_angle = arrow_angle + std::f64::consts::PI / 2.0;
+
+        self.context.set_fill_style_str(&color.get());
+        self.context.begin_path();
+
+        // 矢印の先端
+        self.context.move_to(arrow_x, arrow_y);
+
+        // 矢印の左側
+        let left_x = arrow_x + 8.0 * (tangent_angle - 0.5).cos();
+        let left_y = arrow_y + 8.0 * (tangent_angle - 0.5).sin();
+        self.context.line_to(left_x, left_y);
+
+        // 矢印の右側
+        let right_x = arrow_x + 8.0 * (tangent_angle + 0.5).cos();
+        let right_y = arrow_y + 8.0 * (tangent_angle + 0.5).sin();
+        self.context.line_to(right_x, right_y);
+
+        self.context.close_path();
+        self.context.fill();
+
+        self.context.restore();
+    }
+
+    // リセットボタンがクリック/タップされたかを判定
+    pub fn is_reset_button_clicked(&self, x: i32, y: i32) -> bool {
+        let button_left = RESET_BUTTON_X - RESET_BUTTON_WIDTH / 2.0;
+        let button_right = RESET_BUTTON_X + RESET_BUTTON_WIDTH / 2.0;
+        let button_top = RESET_BUTTON_Y - RESET_BUTTON_HEIGHT / 2.0;
+        let button_bottom = RESET_BUTTON_Y + RESET_BUTTON_HEIGHT / 2.0;
+
+        x as f32 >= button_left
+            && x as f32 <= button_right
+            && y as f32 >= button_top
+            && y as f32 <= button_bottom
+    }
 }
 
 #[async_trait(?Send)]
@@ -759,12 +822,14 @@ impl GameLoop {
         let g = f.clone();
 
         let mut keystate = KeyState::new();
+        let canvas = browser::canvas()?;
         let mut touchstate = TouchState::new(
-            browser::canvas()?.offset_left(),
-            browser::canvas().unwrap().client_width(),
-            browser::canvas().unwrap().client_height(),
+            canvas.offset_left(),
+            canvas.offset_top(),
+            canvas.client_width(),
+            canvas.client_height(),
         );
-        let mut mousestate = MouseState::new(browser::canvas()?.offset_left());
+        let mut mousestate = MouseState::new(canvas.offset_left(), canvas.offset_top());
 
         *g.borrow_mut() = Some(browser::create_raf_closure(move |perf: f64| {
             process_input(&mut keystate, &mut keyevent_receiver);
@@ -798,18 +863,19 @@ impl GameLoop {
 }
 
 pub struct TouchState {
-    x: i32,        // current client_x
-    y: i32,        // current client_y
+    x: i32,        // current canvas-relative x (client_x - offset_x)
+    y: i32,        // current canvas-relative y (client_y - offset_y)
     start_x: i32,  // touch start x position
     start_y: i32,  // touch start y position
     s: bool,       // true: pressed, false: unpressed
-    offset_x: i32, // Canvas offset
+    offset_x: i32, // Canvas offset left
+    offset_y: i32, // Canvas offset top
     screen_width: i32,
     screen_height: i32,
     just_tapped: bool, // タップが検出されたフレームでのみtrue
 }
 impl TouchState {
-    fn new(offset_x: i32, screen_width: i32, screen_height: i32) -> Self {
+    fn new(offset_x: i32, offset_y: i32, screen_width: i32, screen_height: i32) -> Self {
         return TouchState {
             x: 0,
             y: 0,
@@ -817,6 +883,7 @@ impl TouchState {
             start_y: 0,
             s: false,
             offset_x: offset_x,
+            offset_y: offset_y,
             screen_width: screen_width,
             screen_height: screen_height,
             just_tapped: false,
@@ -842,16 +909,26 @@ impl TouchState {
         // タップが検出されたフレームでのみtrueを返す（エッジトリガー）
         self.just_tapped
     }
+    pub fn get_x(&self) -> i32 {
+        self.x
+    }
+    pub fn get_y(&self) -> i32 {
+        self.y
+    }
     fn set_pressed(&mut self, _x: i32, _y: i32) {
-        self.x = _x;
-        self.y = _y;
-        self.start_x = _x;
-        self.start_y = _y;
+        // クライアント座標をキャンバス座標に変換
+        let canvas_x = _x - self.offset_x;
+        let canvas_y = _y - self.offset_y;
+        self.x = canvas_x;
+        self.y = canvas_y;
+        self.start_x = canvas_x;
+        self.start_y = canvas_y;
         self.s = true;
     }
     fn set_moved(&mut self, _x: i32, _y: i32) {
-        self.x = _x;
-        self.y = _y;
+        // クライアント座標をキャンバス座標に変換
+        self.x = _x - self.offset_x;
+        self.y = _y - self.offset_y;
     }
     fn set_released(&mut self) {
         self.s = false;
@@ -951,16 +1028,17 @@ fn prepare_touch_input() -> Result<UnboundedReceiver<TouchPress>> {
 }
 
 pub struct MouseState {
-    x: i32,             // current mouse x
-    y: i32,             // current mouse y
+    x: i32,             // current canvas-relative x (client_x - offset_x)
+    y: i32,             // current canvas-relative y (client_y - offset_y)
     start_x: i32,       // mouse down x position
     start_y: i32,       // mouse down y position
     pressed: bool,      // true: mouse button pressed
-    offset_x: i32,      // Canvas offset
+    offset_x: i32,      // Canvas offset left
+    offset_y: i32,      // Canvas offset top
     just_clicked: bool, // クリックが検出されたフレームでのみtrue
 }
 impl MouseState {
-    fn new(offset_x: i32) -> Self {
+    fn new(offset_x: i32, offset_y: i32) -> Self {
         return MouseState {
             x: 0,
             y: 0,
@@ -968,6 +1046,7 @@ impl MouseState {
             start_y: 0,
             pressed: false,
             offset_x: offset_x,
+            offset_y: offset_y,
             just_clicked: false,
         };
     }
@@ -991,16 +1070,26 @@ impl MouseState {
         // クリックが検出されたフレームでのみtrueを返す（エッジトリガー）
         self.just_clicked
     }
+    pub fn get_x(&self) -> i32 {
+        self.x
+    }
+    pub fn get_y(&self) -> i32 {
+        self.y
+    }
     fn set_pressed(&mut self, _x: i32, _y: i32) {
-        self.x = _x;
-        self.y = _y;
-        self.start_x = _x;
-        self.start_y = _y;
+        // クライアント座標をキャンバス座標に変換
+        let canvas_x = _x - self.offset_x;
+        let canvas_y = _y - self.offset_y;
+        self.x = canvas_x;
+        self.y = canvas_y;
+        self.start_x = canvas_x;
+        self.start_y = canvas_y;
         self.pressed = true;
     }
     fn set_moved(&mut self, _x: i32, _y: i32) {
-        self.x = _x;
-        self.y = _y;
+        // クライアント座標をキャンバス座標に変換
+        self.x = _x - self.offset_x;
+        self.y = _y - self.offset_y;
     }
     fn set_released(&mut self) {
         self.pressed = false;

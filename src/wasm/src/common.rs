@@ -9,7 +9,7 @@ pub const GAMEOVER_MESSAGE: &str = "GAME OVER!";
 pub const GAMEOVER_MESSAGE_Y: f32 = 250.0;
 pub const GAMECLEAR_MESSAGE: &str = "Great job! You made it!";
 pub const GAMECLEAR_MESSAGE_Y: f32 = 300.0; // SCREEN_HEIGHT / 2.0 と同じ（カードと同じ位置）
-pub const FLASH_CARD_NUMBERS: i32 = 5;
+pub const FLASH_CARD_NUMBERS: usize = 5;
 pub const FLASH_CARD_WIDTH: f32 = 350.0;
 pub const FLASH_CARD_HEIGHT: f32 = 480.0;
 pub const FLASH_CARD_CORNER_RADIUS: f32 = 10.0;
@@ -18,6 +18,11 @@ pub const FLASH_CARD_REMOVING_POINT_ROTATE: f32 = 0.2;
 pub const FLASH_CARD_ERASE_POINT_ROTATE: f32 = 1.05;
 pub const SWIPING_JUDEGE_DISTANCE: i32 = 20;
 pub const PROGRESS_COUNTER_Y: f32 = 50.0;
+// リセットボタン（カード束アイコン）の定数
+pub const RESET_BUTTON_X: f32 = 400.0; // 右上の位置
+pub const RESET_BUTTON_Y: f32 = 50.0;
+pub const RESET_BUTTON_WIDTH: f32 = 40.0;
+pub const RESET_BUTTON_HEIGHT: f32 = 50.0;
 /* CONSTANT VALUE --> */
 
 #[derive(Clone, Copy, Default)]
@@ -52,8 +57,7 @@ impl Color {
     }
 }
 
-pub const ITEM_SIZE: usize = 5;
-pub const ITEMS: [(&str, &str, &[&str]); ITEM_SIZE] = [
+pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
     (
         "ハイキング用の[丈夫な]靴が必要です",
         "I need [durable] shoes for hiking",

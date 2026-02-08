@@ -437,9 +437,9 @@ impl Material {
         // {FLASH_CARD_NUMBERS} 個のカードを作成
         for i in 0..FLASH_CARD_NUMBERS {
             // ITEMSの範囲内でループさせる
-            let front_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].0;
-            let back_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].1;
-            let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].2;
+            let front_text = ITEMS[(i % FLASH_CARD_NUMBERS as i32) as usize].0;
+            let back_text = ITEMS[(i % FLASH_CARD_NUMBERS as i32) as usize].1;
+            let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS as i32) as usize].2;
             let card = Card::new(
                 Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
                 FLASH_CARD_WIDTH,
@@ -506,7 +506,7 @@ impl Material {
             }
         }
         // デフォルト値（ブラウザーモード）
-        (1, FLASH_CARD_NUMBERS as i32, MODE_BROWSER)
+        (1, FLASH_CARD_NUMBERS, MODE_BROWSER)
     }
 
     /// サーバーに進行状況を保存（将来実装用のプレースホルダー）
@@ -522,7 +522,7 @@ impl Material {
         log!("load_from_server: not implemented yet");
         // TODO: サーバーAPIからの読み込み処理を実装
         // 例: fetch API を使ってサーバーからGETリクエストで取得
-        (1, FLASH_CARD_NUMBERS as i32, MODE_SERVER)
+        (1, FLASH_CARD_NUMBERS, MODE_SERVER)
     }
     /// Materialをリセット（新しいインスタンスを作成）
     fn reset(&self) -> Material {
@@ -544,9 +544,9 @@ impl Material {
         // 完全に新しいゲームを開始
         let mut cards = Vec::new();
         for i in 0..FLASH_CARD_NUMBERS {
-            let front_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].0;
-            let back_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].1;
-            let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].2;
+            let front_text = ITEMS[(i % FLASH_CARD_NUMBERS as i32) as usize].0;
+            let back_text = ITEMS[(i % FLASH_CARD_NUMBERS as i32) as usize].1;
+            let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS as i32) as usize].2;
             let card = Card::new(
                 Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
                 FLASH_CARD_WIDTH,
@@ -565,7 +565,7 @@ impl Material {
             removing_card: None,
             next_card_ready: false,
             current_card_index: 1,
-            total_cards: FLASH_CARD_NUMBERS as i32,
+            total_cards: FLASH_CARD_NUMBERS,
             mode: self.mode, // 現在のmodeを維持
         }
     }
