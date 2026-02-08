@@ -2,7 +2,7 @@ use anyhow::{Result, anyhow};
 use std::future::Future;
 use wasm_bindgen::{JsCast, closure::WasmClosure, closure::WasmClosureFnOnce, prelude::Closure};
 
-use web_sys::{CanvasRenderingContext2d, Document, HtmlCanvasElement, HtmlImageElement, Window};
+use web_sys::{CanvasRenderingContext2d, Document, HtmlCanvasElement, HtmlDocument, HtmlImageElement, Window};
 
 macro_rules! log {
     ( $( $t:tt )* ) => {
@@ -86,4 +86,40 @@ pub fn now() -> Result<f64> {
         .performance()
         .ok_or_else(|| anyhow!("Performance object not found"))?
         .now())
+}
+
+/// Local Storageに値を設定
+pub fn set_local_storage(key: &str, value: &str) -> Result<()> {
+    let storage = window()?
+        .local_storage()
+        .map_err(|err| anyhow!("Failed to get local storage: {:#?}", err))?
+        .ok_or_else(|| anyhow!("Local storage not available"))?;
+
+    storage
+        .set_item(key, value)
+        .map_err(|err| anyhow!("Failed to set item in local storage: {:#?}", err))
+}
+
+/// Local Storageから値を取得
+pub fn get_local_storage(key: &str) -> Result<Option<String>> {
+    let storage = window()?
+        .local_storage()
+        .map_err(|err| anyhow!("Failed to get local storage: {:#?}", err))?
+        .ok_or_else(|| anyhow!("Local storage not available"))?;
+
+    storage
+        .get_item(key)
+        .map_err(|err| anyhow!("Failed to get item from local storage: {:#?}", err))
+}
+
+/// Local Storageから値を削除
+pub fn remove_local_storage(key: &str) -> Result<()> {
+    let storage = window()?
+        .local_storage()
+        .map_err(|err| anyhow!("Failed to get local storage: {:#?}", err))?
+        .ok_or_else(|| anyhow!("Local storage not available"))?;
+
+    storage
+        .remove_item(key)
+        .map_err(|err| anyhow!("Failed to remove item from local storage: {:#?}", err))
 }

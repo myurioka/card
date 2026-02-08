@@ -1,4 +1,5 @@
 mod card;
+use crate::browser::{get_local_storage, remove_local_storage, set_local_storage};
 use crate::common::*;
 use crate::engine::{
     Align, Font, Game, KeyState, Message, MouseState, Point, Renderer, TouchState,
@@ -6,7 +7,24 @@ use crate::engine::{
 use anyhow::Result;
 use async_trait::async_trait;
 use card::card::*;
+use serde::{Deserialize, Serialize};
 use web_sys::HtmlImageElement;
+
+/// ゲーム進行状況を保存するための構造体
+#[derive(Serialize, Deserialize)]
+struct GameProgress {
+    current_card_index: i32,
+    total_cards: i32,
+    mode: i32, // 0: サーバー管理, 1: ブラウザー管理
+}
+
+const STORAGE_KEY: &str = "card_game_progress";
+
+/// 保存モード
+/// 0: サーバー側で管理（将来実装）
+/// 1: ブラウザーのLocal Storageで管理
+const MODE_SERVER: i32 = 0;
+const MODE_BROWSER: i32 = 1;
 
 /// ゲーム全体の状態を管理するメイン構造体
 pub struct GameStage {
@@ -209,6 +227,9 @@ impl GameStageState<Playing> {
                     // プログレスカウンターを更新
                     self.material.current_card_index += 1;
 
+                    // 進行状況をLocal Storageに保存
+                    self.material.save_to_storage();
+
                     // 次のカードの自動回転を停止
                     if let Some(next_card) = self.material.cards.first_mut() {
                         next_card.stop_auto_rotating();
@@ -216,6 +237,17 @@ impl GameStageState<Playing> {
 
                     // 全てのカードがなくなったらゲームクリア
                     if self.material.cards.is_empty() {
+                        // ゲームクリア時に保存データをクリア（modeに応じて）
+                        match self.material.mode {
+                            MODE_BROWSER => {
+                                let _ = remove_local_storage(STORAGE_KEY);
+                            }
+                            MODE_SERVER => {
+                                log!("clear_server_progress: not implemented yet");
+                            }
+                            _ => {}
+                        }
+
                         self.material.removing_card = None;
                         return PlayingEndState::GameClear(GameStageState {
                             _state: GameClear,
@@ -349,10 +381,12 @@ pub struct Material {
     next_card_ready: bool,       // 次のカードの準備完了フラグ
     current_card_index: i32,     // 現在のカード番号（1から始まる）
     total_cards: i32,            // 総カード枚数
+    mode: i32,                   // 保存モード (0: サーバー, 1: ブラウザー)
 }
 impl Material {
     /// 新しいMaterialインスタンスを作成
     /// {FLASH_CARD_NUMBERS}枚のカード（"Card 1"〜"Card {FLASH_CARD_NUMBERS}"）を初期化
+    /// Cookieから進行状況を復元
     fn new() -> Self {
         let mut cards = Vec::new();
 
@@ -374,18 +408,120 @@ impl Material {
             cards.push(card);
         }
 
+        // Local Storageから進行状況を復元
+        let (current_card_index, total_cards, mode) = Self::load_from_storage();
+
+        // 進行状況に応じて、既に完了したカードを削除
+        let skip_count = (current_card_index - 1).max(0) as usize;
+        if skip_count > 0 && skip_count < cards.len() {
+            cards.drain(0..skip_count);
+        }
+
         Material {
             frame: 0,
-            cards: cards,
+            cards,
+            removing_card: None,
+            next_card_ready: false,
+            current_card_index,
+            total_cards,
+            mode,
+        }
+    }
+
+    /// ゲーム進行状況を保存（modeに応じて保存先を切り替え）
+    fn save_to_storage(&self) {
+        match self.mode {
+            MODE_BROWSER => {
+                // ブラウザーのLocal Storageに保存
+                let progress = GameProgress {
+                    current_card_index: self.current_card_index,
+                    total_cards: self.total_cards,
+                    mode: self.mode,
+                };
+
+                if let Ok(json) = serde_json::to_string(&progress) {
+                    let _ = set_local_storage(STORAGE_KEY, &json);
+                }
+            }
+            MODE_SERVER => {
+                // サーバー側に保存（将来実装）
+                self.save_to_server();
+            }
+            _ => {
+                // 未知のモードの場合はブラウザーに保存
+                log!("Unknown mode: {}, fallback to browser storage", self.mode);
+            }
+        }
+    }
+
+    /// Local Storageからゲーム進行状況を読み込み
+    fn load_from_storage() -> (i32, i32, i32) {
+        if let Ok(Some(json)) = get_local_storage(STORAGE_KEY) {
+            if let Ok(progress) = serde_json::from_str::<GameProgress>(&json) {
+                return (progress.current_card_index, progress.total_cards, progress.mode);
+            }
+        }
+        // デフォルト値（ブラウザーモード）
+        (1, FLASH_CARD_NUMBERS, MODE_BROWSER)
+    }
+
+    /// サーバーに進行状況を保存（将来実装用のプレースホルダー）
+    fn save_to_server(&self) {
+        log!("save_to_server: current_card_index={}, total_cards={}",
+             self.current_card_index, self.total_cards);
+        // TODO: サーバーAPIへの保存処理を実装
+        // 例: fetch API を使ってサーバーにPOSTリクエストを送信
+    }
+
+    /// サーバーから進行状況を読み込み（将来実装用のプレースホルダー）
+    fn _load_from_server() -> (i32, i32, i32) {
+        log!("load_from_server: not implemented yet");
+        // TODO: サーバーAPIからの読み込み処理を実装
+        // 例: fetch API を使ってサーバーからGETリクエストで取得
+        (1, FLASH_CARD_NUMBERS, MODE_SERVER)
+    }
+    /// Materialをリセット（新しいインスタンスを作成）
+    fn reset(&self) -> Material {
+        // modeに応じて保存データをクリア
+        match self.mode {
+            MODE_BROWSER => {
+                // Local Storageをクリア
+                let _ = remove_local_storage(STORAGE_KEY);
+            }
+            MODE_SERVER => {
+                // サーバー側のデータをクリア（将来実装）
+                log!("reset_server: not implemented yet");
+            }
+            _ => {}
+        }
+
+        // 完全に新しいゲームを開始
+        let mut cards = Vec::new();
+        for i in 0..FLASH_CARD_NUMBERS {
+            let front_text = ITEMS[(i % ITEM_SIZE as i32) as usize].0;
+            let back_text = ITEMS[(i % ITEM_SIZE as i32) as usize].1;
+            let etymologies = ITEMS[(i % ITEM_SIZE as i32) as usize].2;
+            let card = Card::new(
+                Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
+                FLASH_CARD_WIDTH,
+                FLASH_CARD_HEIGHT,
+                Color::Green,
+                front_text,
+                back_text,
+                etymologies,
+            );
+            cards.push(card);
+        }
+
+        Material {
+            frame: 0,
+            cards,
             removing_card: None,
             next_card_ready: false,
             current_card_index: 1,
             total_cards: FLASH_CARD_NUMBERS,
+            mode: self.mode, // 現在のmodeを維持
         }
-    }
-    /// Materialをリセット（新しいインスタンスを作成）
-    fn reset(&self) -> Material {
-        Material::new()
     }
     /// カードを描画
     /// 削除中のカードがある場合はそれを描画し、準備完了なら次のカードも表示
