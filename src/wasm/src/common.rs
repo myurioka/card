@@ -9,7 +9,7 @@ pub const GAMEOVER_MESSAGE: &str = "GAME OVER!";
 pub const GAMEOVER_MESSAGE_Y: f32 = 250.0;
 pub const GAMECLEAR_MESSAGE: &str = "Great job! You made it!";
 pub const GAMECLEAR_MESSAGE_Y: f32 = 300.0; // SCREEN_HEIGHT / 2.0 と同じ（カードと同じ位置）
-pub const FLASH_CARD_NUMBERS: usize = 5;
+pub const FLASH_CARD_NUMBERS: usize = 6;
 pub const FLASH_CARD_WIDTH: f32 = 350.0;
 pub const FLASH_CARD_HEIGHT: f32 = 480.0;
 pub const FLASH_CARD_CORNER_RADIUS: f32 = 10.0;
@@ -103,4 +103,13 @@ pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
             "revision: 改訂、復習",
         ],
     ),
+    (
+        "会議の時間を確認していただけますか？",
+        "Can you [confirm] the meeting time?",
+        &[
+            "確認する、検証する、承認する",
+            "類似語 check, vefiry, certify",
+            "confirm + 名詞、 confirm + that 節",
+        ],
+    ),    
 ];
