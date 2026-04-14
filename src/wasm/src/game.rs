@@ -2,13 +2,12 @@ mod card;
 use crate::browser::{get_local_storage, remove_local_storage, set_local_storage};
 use crate::common::*;
 use crate::engine::{
-    Align, Font, Game, KeyState, Message, MouseState, Point, Renderer, TouchState,
+    Align, Font, Game, KeyState, MouseState, Point, Renderer, TouchState,
 };
 use anyhow::Result;
 use async_trait::async_trait;
 use card::card::*;
 use serde::{Deserialize, Serialize};
-use web_sys::HtmlImageElement;
 
 /// ゲーム進行状況を保存するための構造体
 #[derive(Serialize, Deserialize)]

@@ -3,13 +3,12 @@ use crate::common::*;
 use anyhow::{Result, anyhow};
 use async_trait::async_trait;
 use futures::channel::{
-    mpsc::{UnboundedReceiver, unbounded},
-    oneshot::channel,
+    mpsc::{UnboundedReceiver, unbounded}
 };
 
-use std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Mutex};
-use wasm_bindgen::{JsCast, JsValue, prelude::Closure};
-use web_sys::{CanvasRenderingContext2d, HtmlImageElement, Touch, TouchEvent, TouchList};
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use wasm_bindgen::{JsCast};
+use web_sys::{CanvasRenderingContext2d, Touch, TouchEvent, TouchList};
 
 #[derive(Clone, Copy, Default)]
 pub struct Point {

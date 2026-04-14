@@ -9,7 +9,7 @@ pub const GAMEOVER_MESSAGE: &str = "GAME OVER!";
 pub const GAMEOVER_MESSAGE_Y: f32 = 250.0;
 pub const GAMECLEAR_MESSAGE: &str = "Great job! You made it!";
 pub const GAMECLEAR_MESSAGE_Y: f32 = 300.0; // SCREEN_HEIGHT / 2.0 と同じ（カードと同じ位置）
-pub const FLASH_CARD_NUMBERS: usize = 6;
+pub const FLASH_CARD_NUMBERS: usize = 7;
 pub const FLASH_CARD_WIDTH: f32 = 350.0;
 pub const FLASH_CARD_HEIGHT: f32 = 480.0;
 pub const FLASH_CARD_CORNER_RADIUS: f32 = 10.0;
@@ -59,16 +59,16 @@ impl Color {
 
 pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
     (
-        "ハイキング用の[丈夫な]靴が必要です",
-        "I need [durable] shoes for hiking",
+        "ハイキング用の丈夫な靴が必要です",
+        "I need durable shoes for hiking",
         &[
             "dūrābilis/ラテン語: 長持ちする,耐久性のある",
             "endure（耐える）: en- + dūrus",
         ],
     ),
     (
-        "教職はやりがいのある [職業] です",
-        "Teaching is rewarding [profession].",
+        "教職はやりがいのある 職業 です",
+        "Teaching is rewarding profession.",
         &[
             "prōfessiō/ラテン語: 公の宣言,告白,誓約",
             "prō-: 前に,公に",
@@ -77,8 +77,8 @@ pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
         ],
     ),
     (
-        "あなたはこの奨学金の [資格があり] ます",
-        "You are [eligible] for this shcolarship.",
+        "あなたはこの奨学金の 資格があり ます",
+        "You are eligible for this shcolarship.",
         &[
             "eligere/ラテン語: e-/ex-外へ + legere 選ぶ",
             "⇒ 選ばれるに値する、選ばれる資格がある",
@@ -86,8 +86,8 @@ pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
         ],
     ),
     (
-        "このホテルでは朝食は [無料] です",
-        "Breakfast is [complimentary] at this hotel",
+        "このホテルでは朝食は 無料 です",
+        "Breakfast is complimentary at this hotel",
         &[
             "complēreラテン語: 満たす,完成させる",
             "褒める、賛辞の = 元来の意味",
@@ -95,8 +95,8 @@ pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
         ],
     ),
     (
-        "会社は売上予測を [修正] しました",
-        "The company [revised] its salses forecast",
+        "会社は売上予測を 修正 しました",
+        "The company revised its salses forecast",
         &[
             "revidēre/ラテン語: 再び見る,見直す",
             "もう一度見る → 見直す → 改訂する",
@@ -105,11 +105,19 @@ pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
     ),
     (
         "会議の時間を確認していただけますか？",
-        "Can you [confirm] the meeting time?",
+        "Can you confirm the meeting time?",
         &[
             "確認する、検証する、承認する",
             "類似語 check, vefiry, certify",
             "confirm + 名詞、 confirm + that 節",
+        ],
+    ),    
+    (
+        "今夜は1時間早く寝るようにしましょう。",
+        "Let's aim to go to bed an hour earlier tonight.",
+        &[
+            "aim to = 「〜することを目指す",
+            "an hour earlier =「1時間早く」"
         ],
     ),    
 ];
