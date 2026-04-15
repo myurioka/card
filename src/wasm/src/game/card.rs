@@ -11,6 +11,7 @@ pub mod card {
         rotate: f32,            // angle
         front_text: String,     // text on the front of the card
         back_text: String,      // text on the back of the card
+        back_text2: String,      // text2 on the back of the card
         etymology: Vec<String>, // etymologies on the back of the card
         face_state: i32,        // 0: front, 1: back
         alpha: f32,
@@ -28,6 +29,7 @@ pub mod card {
             color: Color,
             front_text: &str,
             back_text: &str,
+            back_text2: &str,
             etymology: &[&str],
         ) -> Self {
             Card {
@@ -38,6 +40,7 @@ pub mod card {
                 rotate: 0.0,                        // Card Rotate
                 front_text: front_text.to_string(), // Card Front Text
                 back_text: back_text.to_string(),   // Card Back Text
+                back_text2: back_text2.to_string(),   // Card Back Text
                 face_state: 0,
                 alpha: 1.0,
                 auto_rotating: 0, // 0:non_rotate 1:rotate

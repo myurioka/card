@@ -438,7 +438,8 @@ impl Material {
             // ITEMSの範囲内でループさせる
             let front_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].0;
             let back_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].1;
-            let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].2;
+            let back_text2 = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].2;
+            let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].3;
             let card = Card::new(
                 Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
                 FLASH_CARD_WIDTH,
@@ -446,7 +447,8 @@ impl Material {
                 Color::Green,
                 front_text,
                 back_text,
-                etymologies,
+                back_text2,
+                etymologies
             );
             cards.push(card);
         }
@@ -545,7 +547,8 @@ impl Material {
         for i in 0..FLASH_CARD_NUMBERS {
             let front_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].0;
             let back_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].1;
-            let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].2;
+            let back_text2 = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].2;
+            let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].3;
             let card = Card::new(
                 Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
                 FLASH_CARD_WIDTH,
@@ -553,7 +556,9 @@ impl Material {
                 Color::Green,
                 front_text,
                 back_text,
-                etymologies,
+               back_text2,
+               etymologies
+
             );
             cards.push(card);
         }

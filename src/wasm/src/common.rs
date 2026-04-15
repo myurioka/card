@@ -13,7 +13,7 @@ pub const FLASH_CARD_NUMBERS: usize = 7;
 pub const FLASH_CARD_WIDTH: f32 = 350.0;
 pub const FLASH_CARD_HEIGHT: f32 = 480.0;
 pub const FLASH_CARD_CORNER_RADIUS: f32 = 10.0;
-pub const FLASH_CARD_ROTATE_SPEED: f32 = 0.15;
+pub const FLASH_CARD_ROTATE_SPEED: f32 = 0.18;
 pub const FLASH_CARD_REMOVING_POINT_ROTATE: f32 = 0.2;
 pub const FLASH_CARD_ERASE_POINT_ROTATE: f32 = 1.05;
 pub const SWIPING_JUDEGE_DISTANCE: i32 = 20;
@@ -57,18 +57,20 @@ impl Color {
     }
 }
 
-pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
+pub const ITEMS: [(&str, &str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
     (
         "ハイキング用の丈夫な靴が必要です",
         "I need durable shoes for hiking",
+        "",
         &[
             "dūrābilis/ラテン語: 長持ちする,耐久性のある",
             "endure（耐える）: en- + dūrus",
         ],
     ),
     (
-        "教職はやりがいのある 職業 です",
+        "教職はやりがいのある職業です",
         "Teaching is rewarding profession.",
+        "",
         &[
             "prōfessiō/ラテン語: 公の宣言,告白,誓約",
             "prō-: 前に,公に",
@@ -77,8 +79,9 @@ pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
         ],
     ),
     (
-        "あなたはこの奨学金の 資格があり ます",
+        "あなたはこの奨学金の資格があります",
         "You are eligible for this shcolarship.",
+        "",
         &[
             "eligere/ラテン語: e-/ex-外へ + legere 選ぶ",
             "⇒ 選ばれるに値する、選ばれる資格がある",
@@ -86,8 +89,9 @@ pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
         ],
     ),
     (
-        "このホテルでは朝食は 無料 です",
+        "このホテルでは朝食は無料です",
         "Breakfast is complimentary at this hotel",
+        "",
         &[
             "complēreラテン語: 満たす,完成させる",
             "褒める、賛辞の = 元来の意味",
@@ -95,8 +99,9 @@ pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
         ],
     ),
     (
-        "会社は売上予測を 修正 しました",
+        "会社は売上予測を修正しました",
         "The company revised its salses forecast",
+        "",
         &[
             "revidēre/ラテン語: 再び見る,見直す",
             "もう一度見る → 見直す → 改訂する",
@@ -106,6 +111,7 @@ pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
     (
         "会議の時間を確認していただけますか？",
         "Can you confirm the meeting time?",
+        "",
         &[
             "確認する、検証する、承認する",
             "類似語 check, vefiry, certify",
@@ -113,8 +119,9 @@ pub const ITEMS: [(&str, &str, &[&str]); FLASH_CARD_NUMBERS] = [
         ],
     ),    
     (
-        "今夜は1時間早く寝るようにしましょう。",
-        "Let's aim to go to bed an hour earlier tonight.",
+        "今夜は1時間早く寝るようにしましょう",
+        "Let's aim to go to bed an hour",
+        "earlier tonight.",
         &[
             "aim to = 「〜することを目指す",
             "an hour earlier =「1時間早く」"

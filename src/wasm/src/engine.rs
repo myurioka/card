@@ -828,7 +828,7 @@ impl GameLoop {
             canvas.client_width(),
             canvas.client_height(),
         );
-        let mut mousestate = MouseState::new(canvas.offset_left(), canvas.offset_top());
+        let mut mousestate = MouseState::new(canvas.offset_left(), canvas.offset_top(), canvas.client_width(), canvas.client_height());
 
         *g.borrow_mut() = Some(browser::create_raf_closure(move |perf: f64| {
             process_input(&mut keystate, &mut keyevent_receiver);
@@ -915,9 +915,9 @@ impl TouchState {
         self.y
     }
     fn set_pressed(&mut self, _x: i32, _y: i32) {
-        // クライアント座標をキャンバス座標に変換
-        let canvas_x = _x - self.offset_x;
-        let canvas_y = _y - self.offset_y;
+        // クライアント座標をキャンバス内部座標に変換（CSSスケーリングを補正）
+        let canvas_x = (_x - self.offset_x) * SCREEN_WIDTH as i32 / self.screen_width;
+        let canvas_y = (_y - self.offset_y) * SCREEN_HEIGHT as i32 / self.screen_height;
         self.x = canvas_x;
         self.y = canvas_y;
         self.start_x = canvas_x;
@@ -925,9 +925,9 @@ impl TouchState {
         self.s = true;
     }
     fn set_moved(&mut self, _x: i32, _y: i32) {
-        // クライアント座標をキャンバス座標に変換
-        self.x = _x - self.offset_x;
-        self.y = _y - self.offset_y;
+        // クライアント座標をキャンバス内部座標に変換（CSSスケーリングを補正）
+        self.x = (_x - self.offset_x) * SCREEN_WIDTH as i32 / self.screen_width;
+        self.y = (_y - self.offset_y) * SCREEN_HEIGHT as i32 / self.screen_height;
     }
     fn set_released(&mut self) {
         self.s = false;
@@ -1034,10 +1034,12 @@ pub struct MouseState {
     pressed: bool,      // true: mouse button pressed
     offset_x: i32,      // Canvas offset left
     offset_y: i32,      // Canvas offset top
+    screen_width: i32,  // CSS display width
+    screen_height: i32, // CSS display height
     just_clicked: bool, // クリックが検出されたフレームでのみtrue
 }
 impl MouseState {
-    fn new(offset_x: i32, offset_y: i32) -> Self {
+    fn new(offset_x: i32, offset_y: i32, screen_width: i32, screen_height: i32) -> Self {
         return MouseState {
             x: 0,
             y: 0,
@@ -1046,6 +1048,8 @@ impl MouseState {
             pressed: false,
             offset_x: offset_x,
             offset_y: offset_y,
+            screen_width: screen_width,
+            screen_height: screen_height,
             just_clicked: false,
         };
     }
@@ -1076,9 +1080,9 @@ impl MouseState {
         self.y
     }
     fn set_pressed(&mut self, _x: i32, _y: i32) {
-        // クライアント座標をキャンバス座標に変換
-        let canvas_x = _x - self.offset_x;
-        let canvas_y = _y - self.offset_y;
+        // クライアント座標をキャンバス内部座標に変換（CSSスケーリングを補正）
+        let canvas_x = (_x - self.offset_x) * SCREEN_WIDTH as i32 / self.screen_width;
+        let canvas_y = (_y - self.offset_y) * SCREEN_HEIGHT as i32 / self.screen_height;
         self.x = canvas_x;
         self.y = canvas_y;
         self.start_x = canvas_x;
@@ -1086,9 +1090,9 @@ impl MouseState {
         self.pressed = true;
     }
     fn set_moved(&mut self, _x: i32, _y: i32) {
-        // クライアント座標をキャンバス座標に変換
-        self.x = _x - self.offset_x;
-        self.y = _y - self.offset_y;
+        // クライアント座標をキャンバス内部座標に変換（CSSスケーリングを補正）
+        self.x = (_x - self.offset_x) * SCREEN_WIDTH as i32 / self.screen_width;
+        self.y = (_y - self.offset_y) * SCREEN_HEIGHT as i32 / self.screen_height;
     }
     fn set_released(&mut self) {
         self.pressed = false;
