@@ -115,6 +115,65 @@ impl Renderer {
             browser::canvas().unwrap().client_height().into(),
         );
     }
+
+    pub fn draw_background(&self) {
+        let w = SCREEN_WIDTH as f64;
+        let h = SCREEN_HEIGHT as f64;
+
+        // 暗い背景色
+        self.context.set_fill_style_str("#070d07");
+        self.context.fill_rect(0.0, 0.0, w, h);
+
+        // 六角形グリッドパターン
+        let size = 28.0_f64;
+        let col_w = size * 1.5;
+        let row_h = size * 3.0_f64.sqrt();
+        let pi = std::f64::consts::PI;
+
+        self.context.set_stroke_style_str("rgba(0, 110, 30, 0.22)");
+        self.context.set_line_width(0.7);
+        self.context.begin_path();
+
+        let cols = (w / col_w) as i32 + 3;
+        let rows = (h / row_h) as i32 + 3;
+
+        for col in -1..cols {
+            for row in -1..rows {
+                let offset_y = if col % 2 != 0 { row_h / 2.0 } else { 0.0 };
+                let cx = col as f64 * col_w;
+                let cy = row as f64 * row_h + offset_y;
+                for i in 0..6_i32 {
+                    let angle = pi / 3.0 * i as f64;
+                    let x = cx + size * angle.cos();
+                    let y = cy + size * angle.sin();
+                    if i == 0 {
+                        self.context.move_to(x, y);
+                    } else {
+                        self.context.line_to(x, y);
+                    }
+                }
+                self.context.close_path();
+            }
+        }
+        let _ = self.context.stroke();
+
+        // 一部の六角形の中心に光点を追加
+        self.context.set_fill_style_str("rgba(0, 180, 60, 0.15)");
+        let mut col = 0_i32;
+        while col < cols {
+            let mut row = 0_i32;
+            while row < rows {
+                let offset_y = if col % 2 != 0 { row_h / 2.0 } else { 0.0 };
+                let cx = col as f64 * col_w;
+                let cy = row as f64 * row_h + offset_y;
+                self.context.begin_path();
+                let _ = self.context.arc(cx, cy, 2.5, 0.0, pi * 2.0);
+                self.context.fill();
+                row += 3;
+            }
+            col += 3;
+        }
+    }
     pub fn text(&self, point: &Point, text: &str, align: Align, font: Font, color: Color) {
         self.context.set_fill_style_str(&color.get());
         match align {

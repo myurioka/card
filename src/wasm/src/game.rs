@@ -672,6 +672,7 @@ impl Game for GameStage {
     /// 画面をクリアし、現在の状態に応じたメッセージとカードを描画
     fn draw(&self, renderer: &Renderer) {
         renderer.clear();
+        renderer.draw_background();
         match &self.machine {
             Some(GameStageStateMachine::Playing(_state)) => {
                 // 最初のカードのみ描画
