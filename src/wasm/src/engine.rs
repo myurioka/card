@@ -8,7 +8,7 @@ use futures::channel::{
 
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 use wasm_bindgen::{JsCast};
-use web_sys::{CanvasRenderingContext2d, Touch, TouchEvent, TouchList};
+use web_sys::{CanvasRenderingContext2d, HtmlImageElement, Touch, TouchEvent, TouchList};
 
 #[derive(Clone, Copy, Default)]
 pub struct Point {
@@ -468,6 +468,7 @@ impl Renderer {
         text: &str,
         flip_angle: f32, // フリップ角度
         etymology: Vec<&str>,
+        svg_image: Option<&HtmlImageElement>, // 裏面SVG画像
     ) {
         self.context.save();
         self.context.set_global_alpha(alpha.into());
@@ -509,18 +510,33 @@ impl Renderer {
 
         // 7. 裏面 語源テキストを描画
         if !is_front {
-            self.context.set_text_align("center");
-            self.context.set_font("14px MyFont");
-            self.context.set_fill_style_str("rgba(255, 255, 255, 0.8)");
+            // SVG画像がある場合は画像を描画、ない場合は語源テキストを描画
+            if let Some(img) = svg_image {
+                // ロード完了済みの場合のみ描画（natural_width > 0 で判定）
+                if img.natural_width() > 0 {
+                    let img_w = 280.0_f64;
+                    let img_h = 230.0_f64;
+                    let img_x = -(img_w / 2.0);
+                    let img_y = -480.0_f64;
+                    let _ = self.context
+                        .draw_image_with_html_image_element_and_dw_and_dh(
+                            img, img_x, img_y, img_w, img_h,
+                        );
+                }
+            } else {
+                self.context.set_text_align("center");
+                self.context.set_font("14px MyFont");
+                self.context.set_fill_style_str("rgba(255, 255, 255, 0.8)");
 
-            // 各語源テキストを順番に描画（Y座標を下にずらしていく）
-            let start_y = -300.0; // 開始Y座標
-            let line_height = 20.0; // 行間
+                // 各語源テキストを順番に描画（Y座標を下にずらしていく）
+                let start_y = -300.0; // 開始Y座標
+                let line_height = 20.0; // 行間
 
-            for (i, etym) in etymology.iter().enumerate() {
-                self.context.set_text_align("left");
-                let y = start_y + (i as f64) * line_height;
-                let _ = self.context.fill_text(etym, -140.0, y);
+                for (i, etym) in etymology.iter().enumerate() {
+                    self.context.set_text_align("left");
+                    let y = start_y + (i as f64) * line_height;
+                    let _ = self.context.fill_text(etym, -140.0, y);
+                }
             }
         }
 

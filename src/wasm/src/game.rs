@@ -440,6 +440,7 @@ impl Material {
             let back_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].1;
             let back_text2 = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].2;
             let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].3;
+            let svg_path = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].4;
             let card = Card::new(
                 Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
                 FLASH_CARD_WIDTH,
@@ -448,7 +449,8 @@ impl Material {
                 front_text,
                 back_text,
                 back_text2,
-                etymologies
+                etymologies,
+                svg_path,
             );
             cards.push(card);
         }
@@ -549,6 +551,7 @@ impl Material {
             let back_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].1;
             let back_text2 = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].2;
             let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].3;
+            let svg_path = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].4;
             let card = Card::new(
                 Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
                 FLASH_CARD_WIDTH,
@@ -556,9 +559,9 @@ impl Material {
                 Color::Green,
                 front_text,
                 back_text,
-               back_text2,
-               etymologies
-
+                back_text2,
+                etymologies,
+                svg_path,
             );
             cards.push(card);
         }
