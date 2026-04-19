@@ -468,7 +468,8 @@ impl Renderer {
         text: &str,
         flip_angle: f32, // フリップ角度
         etymology: Vec<&str>,
-        svg_image: Option<&HtmlImageElement>, // 裏面SVG画像
+        svg_image: Option<&HtmlImageElement>,       // 裏面SVG画像
+        front_svg_image: Option<&HtmlImageElement>, // 表面SVG画像
     ) {
         self.context.save();
         self.context.set_global_alpha(alpha.into());
@@ -502,17 +503,38 @@ impl Renderer {
         let is_front = color.get() == Color::Green.get();
         self.draw_card_decoration(width, height, is_front);
 
-        // 6. テキストを描画（同じ回転座標系で）
-        self.context.set_text_align("center");
-        self.context.set_font("18px MyFont");
-        self.context.set_fill_style_str("white");
-        let _ = self.context.fill_text(&text, 0.0, -340.0);
+        // 6. テキストを描画（SVG画像がない場合のみ）
+        let has_face_svg = if is_front {
+            front_svg_image.is_some()
+        } else {
+            svg_image.is_some()
+        };
+        if !has_face_svg {
+            self.context.set_text_align("center");
+            self.context.set_font("18px MyFont");
+            self.context.set_fill_style_str("white");
+            let _ = self.context.fill_text(&text, 0.0, -340.0);
+        }
 
-        // 7. 裏面 語源テキストを描画
+        // 7. 表面SVG画像を描画
+        if is_front {
+            if let Some(img) = front_svg_image {
+                if img.natural_width() > 0 {
+                    let img_w = 280.0_f64;
+                    let img_h = 230.0_f64;
+                    let img_x = -(img_w / 2.0);
+                    let img_y = -480.0_f64;
+                    let _ = self.context
+                        .draw_image_with_html_image_element_and_dw_and_dh(
+                            img, img_x, img_y, img_w, img_h,
+                        );
+                }
+            }
+        }
+
+        // 8. 裏面 語源テキスト / SVG画像を描画
         if !is_front {
-            // SVG画像がある場合は画像を描画、ない場合は語源テキストを描画
             if let Some(img) = svg_image {
-                // ロード完了済みの場合のみ描画（natural_width > 0 で判定）
                 if img.natural_width() > 0 {
                     let img_w = 280.0_f64;
                     let img_h = 230.0_f64;
@@ -528,9 +550,8 @@ impl Renderer {
                 self.context.set_font("14px MyFont");
                 self.context.set_fill_style_str("rgba(255, 255, 255, 0.8)");
 
-                // 各語源テキストを順番に描画（Y座標を下にずらしていく）
-                let start_y = -300.0; // 開始Y座標
-                let line_height = 20.0; // 行間
+                let start_y = -300.0;
+                let line_height = 20.0;
 
                 for (i, etym) in etymology.iter().enumerate() {
                     self.context.set_text_align("left");

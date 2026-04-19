@@ -22,7 +22,8 @@ pub mod card {
         is_flipping: bool,  // フリップアニメーション中かどうか
         front_color: Color, // 表面の色
         back_color: Color,  // 裏面の色
-        svg_image: Option<Rc<HtmlImageElement>>, // 裏面に表示するSVG画像
+        svg_image: Option<Rc<HtmlImageElement>>,       // 裏面に表示するSVG画像
+        front_svg_image: Option<Rc<HtmlImageElement>>, // 表面に表示するSVG画像
     }
     impl Card {
         pub fn new(
@@ -34,6 +35,7 @@ pub mod card {
             back_text: &str,
             back_text2: &str,
             etymology: &[&str],
+            front_svg_path: &str,
             svg_path: &str,
         ) -> Self {
             let svg_image = if svg_path.is_empty() {
@@ -41,6 +43,14 @@ pub mod card {
             } else {
                 HtmlImageElement::new().ok().map(|img| {
                     img.set_src(svg_path);
+                    Rc::new(img)
+                })
+            };
+            let front_svg_image = if front_svg_path.is_empty() {
+                None
+            } else {
+                HtmlImageElement::new().ok().map(|img| {
+                    img.set_src(front_svg_path);
                     Rc::new(img)
                 })
             };
@@ -62,6 +72,7 @@ pub mod card {
                 back_color: Color::RoyalBlue, // 裏面はロイヤルブルー（英語）
                 etymology: etymology.iter().map(|s| s.to_string()).collect(),
                 svg_image,
+                front_svg_image,
             }
         }
         pub fn rotate_left(&mut self) {
@@ -182,7 +193,8 @@ pub mod card {
                 text,
                 self.flip_angle, // フリップ角度
                 etymology_refs,
-                self.svg_image.as_deref(), // 裏面SVG画像
+                self.svg_image.as_deref(),       // 裏面SVG画像
+                self.front_svg_image.as_deref(), // 表面SVG画像
             );
         }
     }

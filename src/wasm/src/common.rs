@@ -9,7 +9,7 @@ pub const GAMEOVER_MESSAGE: &str = "GAME OVER!";
 pub const GAMEOVER_MESSAGE_Y: f32 = 250.0;
 pub const GAMECLEAR_MESSAGE: &str = "Great job! You made it!";
 pub const GAMECLEAR_MESSAGE_Y: f32 = 300.0; // SCREEN_HEIGHT / 2.0 と同じ（カードと同じ位置）
-pub const FLASH_CARD_NUMBERS: usize = 11;
+pub const FLASH_CARD_NUMBERS: usize = 12;
 pub const FLASH_CARD_WIDTH: f32 = 350.0;
 pub const FLASH_CARD_HEIGHT: f32 = 480.0;
 pub const FLASH_CARD_CORNER_RADIUS: f32 = 10.0;
@@ -57,7 +57,7 @@ impl Color {
     }
 }
 
-pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
+pub const ITEMS: [(&str, &str, &str, &[&str], &str, &str); FLASH_CARD_NUMBERS] = [
     (
         "ハイキング用の丈夫な靴が必要です",
         "I need durable shoes for hiking",
@@ -66,6 +66,7 @@ pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
             "dūrābilis/ラテン語: 長持ちする,耐久性のある",
             "endure（耐える）: en- + dūrus",
         ],
+        "",
         "",
     ),
     (
@@ -79,6 +80,7 @@ pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
             "profess: 公言する、告白する",
         ],
         "",
+        "",
     ),
     (
         "あなたはこの奨学金の資格があります",
@@ -89,6 +91,7 @@ pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
             "⇒ 選ばれるに値する、選ばれる資格がある",
             "election: 選挙",
         ],
+        "",
         "",
     ),
     (
@@ -101,6 +104,7 @@ pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
             "無料の,サービスの = 派生的意味",
         ],
         "",
+        "",
     ),
     (
         "会社は売上予測を修正しました",
@@ -111,6 +115,7 @@ pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
             "もう一度見る → 見直す → 改訂する",
             "revision: 改訂、復習",
         ],
+        "",
         "",
     ),
     (
@@ -123,6 +128,7 @@ pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
             "confirm + 名詞、 confirm + that 節",
         ],
         "",
+        "",
     ),
     (
         "今夜は1時間早く寝るようにしましょう",
@@ -133,12 +139,14 @@ pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
             "an hour earlier =「1時間早く」"
         ],
         "",
+        "",
     ),
     (
         "電力 (消費電力)の公式",
         "",
         "",
         &[],
+        "",
         "characters/power-formula.svg",
     ),
     (
@@ -146,6 +154,7 @@ pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
         "",
         "",
         &[],
+        "",
         "characters/delta-current-formula.svg",
     ),
     (
@@ -153,6 +162,7 @@ pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
         "",
         "",
         &[],
+        "",
         "characters/star-current-formula.svg",
     ),
     (
@@ -160,6 +170,15 @@ pub const ITEMS: [(&str, &str, &str, &[&str], &str); FLASH_CARD_NUMBERS] = [
         "",
         "",
         &[],
+        "",
         "characters/single-phase-3wire.svg",
+    ),
+    (
+        "",
+        "",
+        "",
+        &[],
+        "characters/consultation-card-front.svg",
+        "characters/consultation-card.svg",
     ),
 ];
