@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 270" width="300" height="270" id="single-phase-3wire">
+  <!-- 背景 -->
+  <rect width="300" height="270" rx="8" fill="#1e3a5f" fill-opacity="0.9"/>
+
+  <!-- タイトル -->
+  <text x="150" y="18" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#72F285" font-weight="bold">単相3線式 配電方式</text>
+
+  <!-- コメント帯 -->
+  <rect x="20" y="24" width="260" height="18" rx="3" fill="#293d29"/>
+  <text x="150" y="36" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#72F285">100V・200V 双方対応 ／ 一般住宅の主流</text>
+
+  <line x1="20" y1="46" x2="280" y2="46" stroke="#4169e1" stroke-width="1.5"/>
+
+  <!-- 電源（左側） -->
+  <ellipse cx="52" cy="85"  rx="16" ry="11" fill="none" stroke="#72F285" stroke-width="2"/>
+  <text x="52" y="89"  text-anchor="middle" font-family="sans-serif" font-size="9" fill="#72F285">AC</text>
+  <ellipse cx="52" cy="153" rx="16" ry="11" fill="none" stroke="#4169e1" stroke-width="2"/>
+  <text x="52" y="157" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#4169e1">AC</text>
+  <line x1="52" y1="96"  x2="52" y2="142" stroke="#c8e6c8" stroke-width="1.5"/>
+  <circle cx="52" cy="119" r="3" fill="#c8e6c8"/>
+
+  <!-- L1線（上） -->
+  <line x1="68" y1="85" x2="195" y2="85" stroke="#72F285" stroke-width="2.5"/>
+  <text x="72" y="78" font-family="sans-serif" font-size="10" fill="#72F285" font-weight="bold">L1（+100V）</text>
+
+  <!-- 中性線（中） -->
+  <line x1="52" y1="119" x2="195" y2="119" stroke="#c8e6c8" stroke-width="2" stroke-dasharray="7,3"/>
+  <text x="56" y="112" font-family="sans-serif" font-size="10" fill="#c8e6c8" font-weight="bold">N（中性線 0V）</text>
+
+  <!-- L2線（下） -->
+  <line x1="68" y1="153" x2="195" y2="153" stroke="#4169e1" stroke-width="2.5"/>
+  <text x="72" y="170" font-family="sans-serif" font-size="10" fill="#4169e1" font-weight="bold">L2（-100V）</text>
+
+  <!-- 右縦線 -->
+  <line x1="195" y1="85" x2="195" y2="153" stroke="#ffffff" stroke-width="1.5"/>
+
+  <!-- 負荷A（L1-N間 100V） -->
+  <rect x="208" y="87" width="48" height="27" rx="4" fill="#293d29" stroke="#72F285" stroke-width="1.5"/>
+  <text x="232" y="100" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#ffffff" font-weight="bold">負荷 A</text>
+  <text x="232" y="111" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#72F285">100V</text>
+  <line x1="195" y1="85"  x2="208" y2="85"  stroke="#72F285" stroke-width="1.5"/>
+  <line x1="195" y1="119" x2="208" y2="119" stroke="#c8e6c8" stroke-width="1.5"/>
+  <line x1="256" y1="85"  x2="256" y2="87"  stroke="#72F285" stroke-width="1.5"/>
+  <line x1="256" y1="114" x2="256" y2="119" stroke="#c8e6c8" stroke-width="1.5"/>
+
+  <!-- 負荷B（L2-N間 100V） -->
+  <rect x="208" y="124" width="48" height="27" rx="4" fill="#293d29" stroke="#4169e1" stroke-width="1.5"/>
+  <text x="232" y="137" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#ffffff" font-weight="bold">負荷 B</text>
+  <text x="232" y="148" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#4169e1">100V</text>
+  <line x1="195" y1="119" x2="208" y2="119" stroke="#c8e6c8" stroke-width="1.5"/>
+  <line x1="195" y1="153" x2="208" y2="153" stroke="#4169e1" stroke-width="1.5"/>
+  <line x1="256" y1="119" x2="256" y2="124" stroke="#c8e6c8" stroke-width="1.5"/>
+  <line x1="256" y1="151" x2="256" y2="153" stroke="#4169e1" stroke-width="1.5"/>
+
+  <!-- 200V ブレース -->
+  <line x1="278" y1="85"  x2="278" y2="153" stroke="#ffffff" stroke-width="1"/>
+  <line x1="275" y1="85"  x2="281" y2="85"  stroke="#ffffff" stroke-width="1"/>
+  <line x1="275" y1="153" x2="281" y2="153" stroke="#ffffff" stroke-width="1"/>
+  <text x="291" y="123" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#ffffff">200V</text>
+
+  <!-- 区切り線 -->
+  <line x1="20" y1="188" x2="280" y2="188" stroke="#293d29" stroke-width="1"/>
+
+  <!-- 特徴テキスト -->
+  <text x="150" y="202" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#72F285">── 特徴 ──</text>
+  <text x="150" y="217" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#ffffff">・100V と 200V の両方が使える</text>
+  <text x="150" y="231" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#ffffff">・中性線が電圧の基準点（0V）になる</text>
+  <text x="150" y="245" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#c8e6c8">・負荷が等しいとき 中性線電流 = 0</text>
+  <text x="150" y="259" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#c8e6c8">・断線時 → 各負荷の電圧に偏りが生じる</text>
+</svg>
