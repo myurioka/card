@@ -2,24 +2,28 @@
   <!-- 背景 -->
   <rect width="300" height="230" rx="8" fill="#1e3a5f" fill-opacity="0.85"/>
   <!-- 上部タイトル -->
-  <text x="150" y="26" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#72F285" font-weight="bold">導体にかかる電磁力の公式</text>
+  <text x="150" y="22" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#72F285" font-weight="bold">導体にかかる電磁力の公式</text>
   <!-- 上部区切り線 -->
-  <line x1="20" y1="35" x2="280" y2="35" stroke="#4169e1" stroke-width="1.5"/>
+  <line x1="20" y1="30" x2="280" y2="30" stroke="#4169e1" stroke-width="1.5"/>
   <!-- メイン公式: F = BIL sinθ -->
-  <text x="150" y="88" text-anchor="middle" font-family="serif" font-size="36" fill="#ffffff" font-weight="bold">F = BIL sinθ</text>
+  <text x="150" y="68" text-anchor="middle" font-family="serif" font-size="32" fill="#ffffff" font-weight="bold">F = BIL sinθ</text>
   <!-- 中央区切り線（破線） -->
-  <line x1="50" y1="100" x2="250" y2="100" stroke="#395c39" stroke-width="1" stroke-dasharray="5,3"/>
+  <line x1="50" y1="79" x2="250" y2="79" stroke="#395c39" stroke-width="1" stroke-dasharray="5,3"/>
   <!-- 補足: θは磁界と導体のなす角 -->
-  <text x="150" y="128" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#c8e6c8">（θ：磁界と導体のなす角）</text>
+  <text x="150" y="96" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#c8e6c8">（θ：磁界と導体のなす角）</text>
   <!-- 向き: フレミング左手の法則 -->
-  <text x="150" y="145" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#c8e6c8">向き：フレミングの左手の法則</text>
+  <text x="150" y="111" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#c8e6c8">向き：フレミングの左手の法則</text>
   <!-- 下部区切り線 -->
-  <line x1="20" y1="155" x2="280" y2="155" stroke="#4169e1" stroke-width="1"/>
+  <line x1="20" y1="120" x2="280" y2="120" stroke="#4169e1" stroke-width="1"/>
   <!-- 単位ラベル -->
-  <text x="150" y="172" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#72F285">── 単位 ──</text>
+  <text x="150" y="134" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#72F285">── 単位 ──</text>
   <!-- 単位一覧 -->
-  <text x="55"  y="190" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">F : N (ニュートン)</text>
-  <text x="200" y="190" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">B : T (テスラ)</text>
-  <text x="55"  y="210" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">I : A (アンペア)</text>
-  <text x="200" y="210" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">L : m (メートル)</text>
+  <text x="55"  y="150" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">F : N (ニュートン)</text>
+  <text x="200" y="150" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">B : T (テスラ)</text>
+  <text x="55"  y="168" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">I : A (アンペア)</text>
+  <text x="200" y="168" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">L : m (メートル)</text>
+  <!-- テスラ補足 -->
+  <line x1="20" y1="178" x2="280" y2="178" stroke="#293d29" stroke-width="1"/>
+  <text x="150" y="195" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#72F285">T（テスラ）＝磁束密度の単位</text>
+  <text x="150" y="212" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#c8e6c8">1T = 1Wb/m²（磁界の強さを表す）</text>
 </svg>

@@ -501,12 +501,18 @@ impl Renderer {
         let is_front = color.get() == Color::Green.get();
         self.draw_card_decoration(width, height, is_front);
 
-        // 6. 表面テキストを描画
+        // 6. 表面テキストを描画（\n で複数行に対応）
         if is_front {
             self.context.set_text_align("center");
             self.context.set_font("18px MyFont");
             self.context.set_fill_style_str("white");
-            let _ = self.context.fill_text(text, 0.0, -340.0);
+            let lines: Vec<&str> = text.split('\n').collect();
+            let line_height = 26.0_f64;
+            let start_y = -340.0 - (lines.len() as f64 - 1.0) * line_height / 2.0;
+            for (i, line) in lines.iter().enumerate() {
+                let y = start_y + i as f64 * line_height;
+                let _ = self.context.fill_text(line, 0.0, y);
+            }
         }
 
         // 8. 裏面 語源テキスト / SVG画像を描画
