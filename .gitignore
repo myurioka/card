@@ -6,3 +6,4 @@ rust-project.json
 /node_modules
 .vscode
 .mcp.json
+/dist

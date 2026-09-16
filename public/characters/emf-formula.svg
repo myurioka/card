@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 230" width="300" height="230">
+  <!-- 背景 -->
+  <rect width="300" height="230" rx="8" fill="#1e3a5f" fill-opacity="0.85"/>
+  <!-- 上部タイトル -->
+  <text x="150" y="26" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#72F285" font-weight="bold">電磁誘導の法則（ファラデーの法則）</text>
+  <!-- 上部区切り線 -->
+  <line x1="20" y1="35" x2="280" y2="35" stroke="#4169e1" stroke-width="1.5"/>
+  <!-- メイン公式: e = -N ΔΦ/Δt -->
+  <text x="150" y="88" text-anchor="middle" font-family="serif" font-size="36" fill="#ffffff" font-weight="bold">e = -N ΔΦ/Δt</text>
+  <!-- 中央区切り線（破線） -->
+  <line x1="50" y1="100" x2="250" y2="100" stroke="#395c39" stroke-width="1" stroke-dasharray="5,3"/>
+  <!-- 補足: 符号はレンツの法則 -->
+  <text x="150" y="128" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#c8e6c8">（－：磁束の変化を妨げる向き）</text>
+  <!-- 補足: レンツの法則 -->
+  <text x="150" y="145" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#c8e6c8">向き：レンツの法則</text>
+  <!-- 下部区切り線 -->
+  <line x1="20" y1="155" x2="280" y2="155" stroke="#4169e1" stroke-width="1"/>
+  <!-- 単位ラベル -->
+  <text x="150" y="172" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#72F285">── 単位 ──</text>
+  <!-- 単位一覧 -->
+  <text x="55"  y="190" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">e : V (ボルト)</text>
+  <text x="200" y="190" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">N : 回 (巻数)</text>
+  <text x="55"  y="210" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">ΔΦ : Wb (磁束の変化量)</text>
+  <text x="200" y="210" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">Δt : s (時間)</text>
+</svg>

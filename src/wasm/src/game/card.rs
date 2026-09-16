@@ -12,9 +12,6 @@ pub mod card {
         color: Color,           // color of the card (deprecated, use front_color/back_color)
         rotate: f32,            // angle
         front_text: String,     // text on the front of the card
-        back_text: String,      // text on the back of the card
-        back_text2: String,      // text2 on the back of the card
-        etymology: Vec<String>, // etymologies on the back of the card
         face_state: i32,        // 0: front, 1: back
         alpha: f32,
         auto_rotating: i32, // rotate direction: 0: none, 1: right, -1:left
@@ -23,7 +20,7 @@ pub mod card {
         front_color: Color, // 表面の色
         back_color: Color,  // 裏面の色
         svg_image: Option<Rc<HtmlImageElement>>,       // 裏面に表示するSVG画像
-        front_svg_image: Option<Rc<HtmlImageElement>>, // 表面に表示するSVG画像
+        is_cover: bool, // 表紙カードかどうか（trueの場合は裏返せない）
     }
     impl Card {
         pub fn new(
@@ -32,25 +29,14 @@ pub mod card {
             height: f32,
             color: Color,
             front_text: &str,
-            back_text: &str,
-            back_text2: &str,
-            etymology: &[&str],
-            front_svg_path: &str,
             svg_path: &str,
+            is_cover: bool,
         ) -> Self {
             let svg_image = if svg_path.is_empty() {
                 None
             } else {
                 HtmlImageElement::new().ok().map(|img| {
                     img.set_src(svg_path);
-                    Rc::new(img)
-                })
-            };
-            let front_svg_image = if front_svg_path.is_empty() {
-                None
-            } else {
-                HtmlImageElement::new().ok().map(|img| {
-                    img.set_src(front_svg_path);
                     Rc::new(img)
                 })
             };
@@ -61,8 +47,6 @@ pub mod card {
                 color: color,                       // Card Color (deprecated)
                 rotate: 0.0,                        // Card Rotate
                 front_text: front_text.to_string(), // Card Front Text
-                back_text: back_text.to_string(),   // Card Back Text
-                back_text2: back_text2.to_string(),   // Card Back Text
                 face_state: 0,
                 alpha: 1.0,
                 auto_rotating: 0, // 0:non_rotate 1:rotate
@@ -70,9 +54,8 @@ pub mod card {
                 is_flipping: false,
                 front_color: Color::Green,    // 表面は緑色（日本語）
                 back_color: Color::RoyalBlue, // 裏面はロイヤルブルー（英語）
-                etymology: etymology.iter().map(|s| s.to_string()).collect(),
                 svg_image,
-                front_svg_image,
+                is_cover,
             }
         }
         pub fn rotate_left(&mut self) {
@@ -147,6 +130,10 @@ pub mod card {
             self.is_flipping = false;
         }
         pub fn toggle_face(&mut self) {
+            // 表紙カードは裏返さない
+            if self.is_cover {
+                return;
+            }
             // フリップアニメーション開始
             self.is_flipping = true;
             self.flip_angle = 0.0;
@@ -156,12 +143,12 @@ pub mod card {
             self.is_flipping
         }
 
-        pub fn get_front_text(&self) -> &str {
-            &self.front_text
+        pub fn is_cover(&self) -> bool {
+            self.is_cover
         }
 
-        pub fn get_back_text(&self) -> &str {
-            &self.back_text
+        pub fn get_front_text(&self) -> &str {
+            &self.front_text
         }
 
         pub fn get_face_state(&self) -> i32 {
@@ -169,15 +156,12 @@ pub mod card {
         }
 
         pub fn draw(&self, renderer: &Renderer) {
-            // カードの矩形を描画
+            // カードの矩形を描画（表裏に応じて色を切り替え）
             let (text, color) = if self.face_state == 0 {
                 (&self.front_text, self.front_color)
             } else {
-                (&self.back_text, self.back_color)
+                (&self.front_text, self.back_color)
             };
-
-            // etymology を &str のベクタに変換
-            let etymology_refs: Vec<&str> = self.etymology.iter().map(|s| s.as_str()).collect();
 
             renderer.fill_round_rect_rotate_with_flip(
                 &Point {
@@ -192,9 +176,7 @@ pub mod card {
                 self.alpha,
                 text,
                 self.flip_angle, // フリップ角度
-                etymology_refs,
                 self.svg_image.as_deref(),       // 裏面SVG画像
-                self.front_svg_image.as_deref(), // 表面SVG画像
             );
         }
     }

@@ -9,7 +9,9 @@ pub const GAMEOVER_MESSAGE: &str = "GAME OVER!";
 pub const GAMEOVER_MESSAGE_Y: f32 = 250.0;
 pub const GAMECLEAR_MESSAGE: &str = "Great job! You made it!";
 pub const GAMECLEAR_MESSAGE_Y: f32 = 300.0; // SCREEN_HEIGHT / 2.0 と同じ（カードと同じ位置）
-pub const FLASH_CARD_NUMBERS: usize = 12;
+// 表紙カードのタイトル（\n で改行、カード枚数にはカウントしない）
+pub const COVER_TITLE: &str = "第二種\n電気工事士";
+pub const FLASH_CARD_NUMBERS: usize = 8;
 pub const FLASH_CARD_WIDTH: f32 = 350.0;
 pub const FLASH_CARD_HEIGHT: f32 = 480.0;
 pub const FLASH_CARD_CORNER_RADIUS: f32 = 10.0;
@@ -57,128 +59,37 @@ impl Color {
     }
 }
 
-pub const ITEMS: [(&str, &str, &str, &[&str], &str, &str); FLASH_CARD_NUMBERS] = [
+pub const ITEMS: [(&str, &str); FLASH_CARD_NUMBERS] = [
     (
-        "ハイキング用の丈夫な靴が必要です",
-        "I need durable shoes for hiking",
-        "",
-        &[
-            "dūrābilis/ラテン語: 長持ちする,耐久性のある",
-            "endure（耐える）: en- + dūrus",
-        ],
-        "",
-        "",
+        "導体にかかる電磁力の計算式は？",
+        "characters/force-formula.svg",
     ),
     (
-        "教職はやりがいのある職業です",
-        "Teaching is rewarding profession.",
-        "",
-        &[
-            "prōfessiō/ラテン語: 公の宣言,告白,誓約",
-            "prō-: 前に,公に",
-            "fatērī: 認める,告白する,宣言する",
-            "profess: 公言する、告白する",
-        ],
-        "",
-        "",
-    ),
-    (
-        "あなたはこの奨学金の資格があります",
-        "You are eligible for this shcolarship.",
-        "",
-        &[
-            "eligere/ラテン語: e-/ex-外へ + legere 選ぶ",
-            "⇒ 選ばれるに値する、選ばれる資格がある",
-            "election: 選挙",
-        ],
-        "",
-        "",
-    ),
-    (
-        "このホテルでは朝食は無料です",
-        "Breakfast is complimentary at this hotel",
-        "",
-        &[
-            "complēreラテン語: 満たす,完成させる",
-            "褒める、賛辞の = 元来の意味",
-            "無料の,サービスの = 派生的意味",
-        ],
-        "",
-        "",
-    ),
-    (
-        "会社は売上予測を修正しました",
-        "The company revised its salses forecast",
-        "",
-        &[
-            "revidēre/ラテン語: 再び見る,見直す",
-            "もう一度見る → 見直す → 改訂する",
-            "revision: 改訂、復習",
-        ],
-        "",
-        "",
-    ),
-    (
-        "会議の時間を確認していただけますか？",
-        "Can you confirm the meeting time?",
-        "",
-        &[
-            "確認する、検証する、承認する",
-            "類似語 check, vefiry, certify",
-            "confirm + 名詞、 confirm + that 節",
-        ],
-        "",
-        "",
-    ),
-    (
-        "今夜は1時間早く寝るようにしましょう",
-        "Let's aim to go to bed an hour",
-        "earlier tonight.",
-        &[
-            "aim to = 「〜することを目指す",
-            "an hour earlier =「1時間早く」"
-        ],
-        "",
-        "",
+        "電磁誘導起電力の計算式は？",
+        "characters/emf-formula.svg",
     ),
     (
         "電力 (消費電力)の公式",
-        "",
-        "",
-        &[],
-        "",
         "characters/power-formula.svg",
     ),
     (
         "三相3線式 デルタ結線の電流 I の公式",
-        "",
-        "",
-        &[],
-        "",
         "characters/delta-current-formula.svg",
     ),
     (
         "三相3線式 スター結線の電流 I の公式",
-        "",
-        "",
-        &[],
-        "",
         "characters/star-current-formula.svg",
     ),
     (
         "単相3線式 配電方式",
-        "",
-        "",
-        &[],
-        "",
         "characters/single-phase-3wire.svg",
     ),
     (
-        "",
-        "",
-        "",
-        &[],
-        "characters/consultation-card-front.svg",
-        "characters/consultation-card.svg",
+        "配線図上の表記 E は何を表す？",
+        "characters/wiring-symbol-e.svg",
+    ),
+    (
+        "三相かご形誘導機",
+        "characters/sync-speed-formula.svg",
     ),
 ];

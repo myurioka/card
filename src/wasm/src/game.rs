@@ -263,15 +263,25 @@ impl GameStageState<Playing> {
                 _mousestate.clear();
 
                 if rotate_direction == -1 {
+                    // 表紙カードかどうか（表紙はカード枚数・進行状況にカウントしない）
+                    let was_cover = self
+                        .material
+                        .cards
+                        .first()
+                        .map(|c| c.is_cover())
+                        .unwrap_or(false);
+
                     // 左回転: カードを配列から削除
                     self.material.removing_card = Some(self.material.cards.remove(0));
                     self.material.next_card_ready = false;
 
-                    // プログレスカウンターを更新
-                    self.material.current_card_index += 1;
+                    if !was_cover {
+                        // プログレスカウンターを更新
+                        self.material.current_card_index += 1;
 
-                    // 進行状況をLocal Storageに保存
-                    self.material.save_to_storage();
+                        // 進行状況をLocal Storageに保存
+                        self.material.save_to_storage();
+                    }
 
                     // 次のカードの自動回転を停止
                     if let Some(next_card) = self.material.cards.first_mut() {
@@ -298,12 +308,25 @@ impl GameStageState<Playing> {
                         });
                     }
                 } else if rotate_direction == 1 {
-                    // 右回転: カードを配列の最後に移動（プログレスカウンターは進めない）
-                    let mut removed_card = self.material.cards.remove(0);
-                    self.material.removing_card = Some(removed_card.clone());
-                    removed_card.reset_card(); // カードの状態を完全にリセット（表面に戻す）
-                    self.material.cards.push(removed_card); // 配列の最後に追加
-                    self.material.next_card_ready = false;
+                    let was_cover = self
+                        .material
+                        .cards
+                        .first()
+                        .map(|c| c.is_cover())
+                        .unwrap_or(false);
+
+                    if was_cover {
+                        // 表紙カードは配列の最後に戻さず取り除く
+                        self.material.removing_card = Some(self.material.cards.remove(0));
+                        self.material.next_card_ready = false;
+                    } else {
+                        // 右回転: カードを配列の最後に移動（プログレスカウンターは進めない）
+                        let mut removed_card = self.material.cards.remove(0);
+                        self.material.removing_card = Some(removed_card.clone());
+                        removed_card.reset_card(); // カードの状態を完全にリセット（表面に戻す）
+                        self.material.cards.push(removed_card); // 配列の最後に追加
+                        self.material.next_card_ready = false;
+                    }
 
                     // 次のカードの自動回転を停止
                     if let Some(next_card) = self.material.cards.first_mut() {
@@ -427,6 +450,19 @@ pub struct Material {
     mode: i32,                   // 保存モード (0: サーバー, 1: ブラウザー)
 }
 impl Material {
+    /// 表紙カードを作成（カード枚数にはカウントされず、裏返すこともできない）
+    fn create_cover_card() -> Card {
+        Card::new(
+            Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
+            FLASH_CARD_WIDTH,
+            FLASH_CARD_HEIGHT,
+            Color::Green,
+            COVER_TITLE,
+            "",
+            true,
+        )
+    }
+
     /// 新しいMaterialインスタンスを作成
     /// {FLASH_CARD_NUMBERS}枚のカード（"Card 1"〜"Card {FLASH_CARD_NUMBERS}"）を初期化
     /// Cookieから進行状況を復元
@@ -437,22 +473,15 @@ impl Material {
         for i in 0..FLASH_CARD_NUMBERS {
             // ITEMSの範囲内でループさせる
             let front_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].0;
-            let back_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].1;
-            let back_text2 = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].2;
-            let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].3;
-            let front_svg_path = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].4;
-            let svg_path = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].5;
+            let svg_path = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].1;
             let card = Card::new(
                 Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
                 FLASH_CARD_WIDTH,
                 FLASH_CARD_HEIGHT,
                 Color::Green,
                 front_text,
-                back_text,
-                back_text2,
-                etymologies,
-                front_svg_path,
                 svg_path,
+                false,
             );
             cards.push(card);
         }
@@ -465,6 +494,9 @@ impl Material {
         if skip_count > 0 && skip_count < cards.len() {
             cards.drain(0..skip_count);
         }
+
+        // 表紙カードを先頭に追加（カード枚数・進行状況にはカウントしない）
+        cards.insert(0, Self::create_cover_card());
 
         Material {
             frame: 0,
@@ -550,25 +582,21 @@ impl Material {
         let mut cards = Vec::new();
         for i in 0..FLASH_CARD_NUMBERS {
             let front_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].0;
-            let back_text = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].1;
-            let back_text2 = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].2;
-            let etymologies = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].3;
-            let front_svg_path = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].4;
-            let svg_path = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].5;
+            let svg_path = ITEMS[(i % FLASH_CARD_NUMBERS) as usize].1;
             let card = Card::new(
                 Point::new(SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0),
                 FLASH_CARD_WIDTH,
                 FLASH_CARD_HEIGHT,
                 Color::Green,
                 front_text,
-                back_text,
-                back_text2,
-                etymologies,
-                front_svg_path,
                 svg_path,
+                false,
             );
             cards.push(card);
         }
+
+        // 表紙カードを先頭に追加（カード枚数・進行状況にはカウントしない）
+        cards.insert(0, Self::create_cover_card());
 
         Material {
             frame: 0,
@@ -584,6 +612,14 @@ impl Material {
     /// 削除中のカードがある場合はそれを描画し、準備完了なら次のカードも表示
     /// show_progress: プログレスカウンターを表示するかどうか
     fn draw(&self, _renderer: &Renderer, show_progress: bool) {
+        // 表紙カード表示中はプログレスカウンター・リセットボタンを表示しない
+        let show_progress = show_progress
+            && !self
+                .cards
+                .first()
+                .map(|c| c.is_cover())
+                .unwrap_or(false);
+
         // 次のカードを先に描画（背面）
         if self.next_card_ready {
             if let Some(card) = self.cards.get(0) {

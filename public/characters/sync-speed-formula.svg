@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 230" width="300" height="230">
+  <!-- 背景 -->
+  <rect width="300" height="230" rx="8" fill="#1e3a5f" fill-opacity="0.85"/>
+  <!-- 上部タイトル -->
+  <text x="150" y="26" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#72F285" font-weight="bold">回転磁界の同期速度の公式</text>
+  <!-- 上部区切り線 -->
+  <line x1="20" y1="35" x2="280" y2="35" stroke="#4169e1" stroke-width="1.5"/>
+  <!-- メイン公式: Ns = 120f / p -->
+  <text x="130" y="90" text-anchor="end" font-family="serif" font-size="34" fill="#ffffff" font-weight="bold">Ns =</text>
+  <text x="180" y="80" text-anchor="middle" font-family="serif" font-size="30" fill="#ffffff" font-weight="bold">120f</text>
+  <line x1="150" y1="90" x2="210" y2="90" stroke="#ffffff" stroke-width="2"/>
+  <text x="180" y="112" text-anchor="middle" font-family="serif" font-size="30" fill="#ffffff" font-weight="bold">p</text>
+  <!-- 中央区切り線（破線） -->
+  <line x1="50" y1="130" x2="250" y2="130" stroke="#395c39" stroke-width="1" stroke-dasharray="5,3"/>
+  <!-- 下部区切り線 -->
+  <line x1="20" y1="145" x2="280" y2="145" stroke="#4169e1" stroke-width="1"/>
+  <!-- 単位ラベル -->
+  <text x="150" y="162" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#72F285">── 記号 ──</text>
+  <!-- 単位一覧 -->
+  <text x="90"  y="180" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">Ns : 同期速度 (min⁻¹)</text>
+  <text x="90"  y="200" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">f : 周波数 (Hz)</text>
+  <text x="220" y="180" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#ffffff">p : 極数</text>
+  <!-- 補足 -->
+  <line x1="20" y1="210" x2="280" y2="210" stroke="#293d29" stroke-width="1"/>
+  <text x="150" y="225" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#c8e6c8">三相かご形誘導機の回転磁界の速度</text>
+</svg>
