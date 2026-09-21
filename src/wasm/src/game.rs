@@ -224,10 +224,11 @@ impl GameStageState<Playing> {
                     }
                 }
 
-                // 左方向への回転
+                // 左方向への回転（マウスの右ボタンでも回転）
                 if _keystate.is_pressed("ArrowLeft")
                     || _touchstate.is_swiping_left()
                     || _mousestate.is_dragging_left()
+                    || _mousestate.is_right_pressed()
                 {
                     if let Some(card) = self.material.cards.first_mut() {
                         card.rotate_left();

@@ -1108,6 +1108,7 @@ pub struct MouseState {
     screen_width: i32,  // CSS display width
     screen_height: i32, // CSS display height
     just_clicked: bool, // クリックが検出されたフレームでのみtrue
+    right_pressed: bool, // true: マウスの右ボタンが押されている
 }
 impl MouseState {
     fn new(offset_x: i32, offset_y: i32, screen_width: i32, screen_height: i32) -> Self {
@@ -1122,7 +1123,11 @@ impl MouseState {
             screen_width: screen_width,
             screen_height: screen_height,
             just_clicked: false,
+            right_pressed: false,
         };
+    }
+    pub fn is_right_pressed(&self) -> bool {
+        self.right_pressed
     }
     pub fn is_dragging_left(&self) -> bool {
         if self.pressed {
@@ -1186,6 +1191,7 @@ impl MouseState {
         self.y = self.start_y;
         self.pressed = false;
         self.just_clicked = false;
+        self.right_pressed = false;
     }
 }
 
@@ -1248,7 +1254,12 @@ fn process_mouse_input(state: &mut MouseState, mouse_receiver: &mut UnboundedRec
             Err(_err) => break,
             Ok(Some(evt)) => match evt {
                 MousePress::MouseDown(evt) => {
-                    state.set_pressed(evt.client_x(), evt.client_y());
+                    // 右ボタン(2)はドラッグ/クリックとは別に扱う
+                    if evt.button() == 2 {
+                        state.right_pressed = true;
+                    } else {
+                        state.set_pressed(evt.client_x(), evt.client_y());
+                    }
                 }
                 MousePress::MouseMove(evt) => {
                     if state.pressed {
@@ -1256,6 +1267,10 @@ fn process_mouse_input(state: &mut MouseState, mouse_receiver: &mut UnboundedRec
                     }
                 }
                 MousePress::MouseUp(evt) => {
+                    if evt.button() == 2 {
+                        state.right_pressed = false;
+                        continue;
+                    }
                     // canvas外でreleaseされた場合にも座標を更新
                     state.set_moved(evt.client_x(), evt.client_y());
                     state.set_released();
@@ -1292,6 +1307,14 @@ fn prepare_mouse_input() -> Result<UnboundedReceiver<MousePress>> {
     browser::canvas()?.set_onmousedown(Some(onmousedown.as_ref().unchecked_ref()));
     browser::canvas()?.set_onmousemove(Some(onmousemove.as_ref().unchecked_ref()));
     browser::canvas()?.set_onmouseup(Some(onmouseup.as_ref().unchecked_ref()));
+
+    // 右クリックでコンテキストメニューを出さない
+    let oncontextmenu = browser::closure_wrap(Box::new(move |evt: web_sys::MouseEvent| {
+        evt.prevent_default();
+    }) as Box<dyn FnMut(web_sys::MouseEvent)>);
+    browser::canvas()?.set_oncontextmenu(Some(oncontextmenu.as_ref().unchecked_ref()));
+    oncontextmenu.forget();
+
     onmousedown.forget();
     onmousemove.forget();
     onmouseup.forget();
