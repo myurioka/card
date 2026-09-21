@@ -11,7 +11,7 @@ pub const GAMECLEAR_MESSAGE: &str = "Great job! You made it!";
 pub const GAMECLEAR_MESSAGE_Y: f32 = 300.0; // SCREEN_HEIGHT / 2.0 と同じ（カードと同じ位置）
 // 表紙カードのタイトル（\n で改行、カード枚数にはカウントしない）
 pub const COVER_TITLE: &str = "第二種\n電気工事士";
-pub const FLASH_CARD_NUMBERS: usize = 9;
+pub const FLASH_CARD_NUMBERS: usize = 10;
 pub const FLASH_CARD_WIDTH: f32 = 350.0;
 pub const FLASH_CARD_HEIGHT: f32 = 480.0;
 pub const FLASH_CARD_CORNER_RADIUS: f32 = 10.0;
@@ -95,5 +95,9 @@ pub const ITEMS: [(&str, &str); FLASH_CARD_NUMBERS] = [
     (
         "軟銅線\n硬銅線\nアルミ線の抵抗率",
         "characters/wire-resistivity.svg",
+    ),
+    (
+        "配線図の配線記号\n・天井隠ぺい配線\n・床隠ぺい配線\n・露出配線\n・地中配線",
+        "characters/wiring-line-symbols.svg",
     ),
 ];
