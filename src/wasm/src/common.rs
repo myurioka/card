@@ -8,10 +8,10 @@ pub const DISPLAY_MESSAGE_Y: f32 = 250.0;
 pub const GAMEOVER_MESSAGE: &str = "GAME OVER!";
 pub const GAMEOVER_MESSAGE_Y: f32 = 250.0;
 pub const GAMECLEAR_MESSAGE: &str = "Great job! You made it!";
-pub const GAMECLEAR_MESSAGE_Y: f32 = 300.0; // SCREEN_HEIGHT / 2.0 と同じ（カードと同じ位置）
+pub const GAMECLEAR_MESSAGE_Y: f32 = 330.0; // カードの中心Y（カードは Y=90〜570 に描画される。engine.rs の fill_round_rect_rotate_with_flip 参照）
 // 表紙カードのタイトル（\n で改行、カード枚数にはカウントしない）
 pub const COVER_TITLE: &str = "第二種\n電気工事士";
-pub const FLASH_CARD_NUMBERS: usize = 10;
+pub const FLASH_CARD_NUMBERS: usize = 14;
 pub const FLASH_CARD_WIDTH: f32 = 350.0;
 pub const FLASH_CARD_HEIGHT: f32 = 480.0;
 pub const FLASH_CARD_CORNER_RADIUS: f32 = 10.0;
@@ -99,5 +99,21 @@ pub const ITEMS: [(&str, &str); FLASH_CARD_NUMBERS] = [
     (
         "配線図の配線記号\n・天井隠ぺい配線\n・床隠ぺい配線\n・露出配線\n・地中配線",
         "characters/wiring-line-symbols.svg",
+    ),
+    (
+        "600Vビニル絶縁電線\nの表記は？",
+        "characters/wire-iv.svg",
+    ),
+    (
+        "ビニル絶縁ビニル\nシースケーブル平形\nの表記は？",
+        "characters/wire-vvf.svg",
+    ),
+    (
+        "架橋ポリエチレン絶縁\nビニルシースケーブル\nの表記は？",
+        "characters/wire-cv.svg",
+    ),
+    (
+        "架橋ポリエチレン絶縁\nビニルシースケーブル\n(単心3本より線)\nの表記は？",
+        "characters/wire-cvt.svg",
     ),
 ];
