@@ -11,7 +11,7 @@ pub const GAMECLEAR_MESSAGE: &str = "Great job! You made it!";
 pub const GAMECLEAR_MESSAGE_Y: f32 = 330.0; // カードの中心Y（カードは Y=90〜570 に描画される。engine.rs の fill_round_rect_rotate_with_flip 参照）
 // 表紙カードのタイトル（\n で改行、カード枚数にはカウントしない）
 pub const COVER_TITLE: &str = "第二種\n電気工事士";
-pub const FLASH_CARD_NUMBERS: usize = 14;
+pub const FLASH_CARD_NUMBERS: usize = 19;
 pub const FLASH_CARD_WIDTH: f32 = 350.0;
 pub const FLASH_CARD_HEIGHT: f32 = 480.0;
 pub const FLASH_CARD_CORNER_RADIUS: f32 = 10.0;
@@ -116,4 +116,21 @@ pub const ITEMS: [(&str, &str); FLASH_CARD_NUMBERS] = [
         "架橋ポリエチレン絶縁\nビニルシースケーブル\n(単心3本より線)\nの表記は？",
         "characters/wire-cvt.svg",
     ),
+    (
+        "交流電圧の瞬時値を\n求める公式は？",
+        "characters/ac-instantaneous-voltage.svg",
+    ),
+    (
+        "ビニル絶縁電線(IV)の\n絶縁物の最高許容温度は？",
+        "characters/iv-max-temperature.svg",
+    ),
+    (
+        "MIケーブルの\n絶縁物の最高許容温度は？",
+        "characters/mi-cable-max-temperature.svg",
+    ),
+    (
+        "IV線(単線)の許容電流は？",
+        "characters/iv-allowable-current.svg",
+    ),
+    ("絶縁電線", "characters/insulated-wire-types.svg"),
 ];

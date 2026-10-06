@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 230" width="300" height="230">
+  <!-- 背景 -->
+  <rect width="300" height="230" rx="8" fill="#1e3a5f" fill-opacity="0.85"/>
+  <!-- 上部タイトル -->
+  <text x="150" y="22" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#72F285" font-weight="bold">絶縁電線の種類</text>
+  <!-- 上部区切り線 -->
+  <line x1="12" y1="30" x2="288" y2="30" stroke="#4169e1" stroke-width="1.5"/>
+
+  <!-- 見出し -->
+  <g font-family="sans-serif" font-size="9" fill="#c8e6c8">
+    <text x="20" y="46" text-anchor="middle">No.</text>
+    <text x="32" y="46">記号</text>
+    <text x="74" y="46">名称</text>
+    <text x="232" y="46" text-anchor="middle">許容温度</text>
+    <text x="274" y="46" text-anchor="middle">使用場所</text>
+  </g>
+  <line x1="12" y1="53" x2="288" y2="53" stroke="#4169e1" stroke-width="1"/>
+
+  <!-- 番号 -->
+  <g font-family="sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">
+    <text x="20" y="74">①</text>
+    <text x="20" y="98">②</text>
+    <text x="20" y="122">③</text>
+    <text x="20" y="146">④</text>
+    <text x="20" y="170">⑤</text>
+  </g>
+  <!-- 記号 -->
+  <g font-family="sans-serif" font-size="11" fill="#72F285" font-weight="bold">
+    <text x="32" y="74">IV</text>
+    <text x="32" y="98">EM-IE</text>
+    <text x="32" y="122">RB</text>
+    <text x="32" y="146">DV</text>
+    <text x="32" y="170">OW</text>
+  </g>
+  <!-- 名称 -->
+  <g font-family="sans-serif" font-size="10" fill="#ffffff">
+    <text x="74" y="74">600Vビニル絶縁電線</text>
+    <text x="74" y="98">600Vポリエチレン絶縁電線</text>
+    <text x="74" y="122">600Vゴム絶縁電線</text>
+    <text x="74" y="146">引込用ビニル絶縁電線</text>
+    <text x="74" y="170">屋外用ビニル絶縁電線</text>
+  </g>
+  <!-- 許容温度 -->
+  <g font-family="sans-serif" font-size="11" fill="#72F285" text-anchor="middle">
+    <text x="232" y="74">60℃</text>
+    <text x="232" y="98">75℃</text>
+    <text x="232" y="122">75℃</text>
+    <text x="232" y="146" fill="#c8e6c8">－</text>
+    <text x="232" y="170" fill="#c8e6c8">－</text>
+  </g>
+  <!-- 使用場所 -->
+  <g font-family="sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">
+    <text x="274" y="74">屋内</text>
+    <text x="274" y="98">屋内</text>
+    <text x="274" y="122">屋内</text>
+    <text x="274" y="146">屋外</text>
+    <text x="274" y="170">屋外</text>
+  </g>
+
+  <!-- 行区切り -->
+  <g stroke="#395c39" stroke-width="1" stroke-dasharray="5,3">
+    <line x1="12" y1="82" x2="288" y2="82"/>
+    <line x1="12" y1="106" x2="288" y2="106"/>
+    <line x1="12" y1="130" x2="288" y2="130"/>
+    <line x1="12" y1="154" x2="288" y2="154"/>
+  </g>
+
+  <!-- 下部区切り線 -->
+  <line x1="12" y1="182" x2="288" y2="182" stroke="#4169e1" stroke-width="1"/>
+  <!-- 補足 -->
+  <text x="150" y="202" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#ffffff">許容温度は絶縁物の最高許容温度</text>
+  <text x="150" y="219" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#c8e6c8">DV・OW は屋外の引込線・架空配線用</text>
+</svg>
